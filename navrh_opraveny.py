@@ -8,21 +8,23 @@ import os
 import sys
 import re
 import shutil
-from collections import OrderedDict, Counter, defaultdict # Vráceno defaultdict
+from collections import OrderedDict, Counter # Odebráno defaultdict
 
 # --- Konfigurace ---
+# ... (beze změny) ...
 ENCODING_FILE = "znakova_sada.txt"; DEFAULT_ENCODING = "utf-8"; OUTPUT_SUFFIX = "_upr"; CSV_DELIMITER = ';'
 TEXTY_SUFFIX = "_texty.csv"; TEXTY_COLUMN_FILTER = "Text"; TEXTY_REQUIRED_CHARS = ['/', ':']; TEXTY_FORBIDDEN_CHAR = " "
 SYMBOLY_SUFFIX = "_symboly.csv"; SYMBOLY_COL_TYP = "Typ"; SYMBOLY_COL_SYMBOL = "Symbol"; SYMBOLY_TYP_REQUIRED_CHARS = TEXTY_REQUIRED_CHARS; SYMBOLY_TYP_FORBIDDEN_CHARS = [" ", "-"]; SYMBOLY_SYMBOL_REQUIRED_VALUE = "sipka"
 CARY_SUFFIX = "_cary.csv"; CARY_COL_ZNACENI = "Značení"; CARY_COL_SPECIFIKACE = "Specifikace"; CARY_ZNACENI_REQUIRED_CHARS = TEXTY_REQUIRED_CHARS; CARY_ZNACENI_FORBIDDEN_CHARS = [" ", "-"]
 FINAL_OUTPUT_FILENAME = "priprava.csv"; EDITED_OUTPUT_FILENAME = "priprava_upr.csv"; DEFAULT_SPECIFICATION = "neni spec"
 
+
 # --- Globální proměnné ---
 texty_filepath = None; symboly_filepath = None; cary_filepath = None; main_root = None; status_label = None
 
 # --- Parser Funkce ---
+# ... (beze změny) ...
 def parse_component(comp_str):
-    """Naparsuje část spojení (např. 'PUC1:1') na název, číslo, pin."""
     match_comp_pin = re.match(r"^(.*?):(.*)$", comp_str)
     if not match_comp_pin: comp_part = comp_str; pin = None
     else: comp_part = match_comp_pin.group(1).strip(); pin = match_comp_pin.group(2).strip()
@@ -32,7 +34,6 @@ def parse_component(comp_str):
     return {"name": name, "num": num, "pin": pin}
 
 def parse_connection(connection_string):
-    """Naparsuje celý řetězec spojení A/B."""
     if '/' not in connection_string: return None
     parts = connection_string.split('/', 1); part_a_str = parts[0].strip(); part_b_str = parts[1].strip()
     if not part_a_str or not part_b_str: return None
@@ -43,10 +44,11 @@ def parse_connection(connection_string):
 # --- Pomocné Funkce ---
 def read_encoding(filename=ENCODING_FILE):
     """Načte znakovou sadu."""
+    # global status_label # Není třeba global pro čtení/volání metod
     try:
         script_dir = os.path.dirname(os.path.abspath(sys.argv[0])); encoding_filepath = os.path.join(script_dir, filename)
-        # Použijeme utf-8 pro čtení konfiguračního souboru, mělo by být bezpečné
-        with open(encoding_filepath, 'r', encoding='utf-8') as f: first_line = f.readline().strip() # Opraveno: explicitní encoding
+        # Otevření konfiguračního souboru - zde je systémové kódování většinou OK
+        with open(encoding_filepath, 'r') as f: first_line = f.readline().strip()
         if first_line:
             try: "test".encode(first_line); print(f"+ Znak. sada: {first_line}"); return first_line
             except LookupError: print(f"! Chyba: Neplatná znak. sada '{first_line}'. Používám: {DEFAULT_ENCODING}"); messagebox.showwarning("Chyba kódování", f"Neplatná sada '{first_line}'.\nBude použito: {DEFAULT_ENCODING}"); return DEFAULT_ENCODING
@@ -65,52 +67,51 @@ def check_overwrite(output_filepath):
 
 def write_output_file(output_filepath, encoding, header, data, rows_processed, rows_written, success_status_msg):
     """Zapíše data do výstupního CSV souboru a aktualizuje status."""
-    global status_label
+    global status_label # Potřebujeme pro .config()
     output_filename = os.path.basename(output_filepath)
     final_status = success_status_msg
     if not data and rows_processed > 1 : messagebox.showwarning("Prázdný výsledek", f"Pro '{output_filename}' nezůstaly žádné řádky."); final_status = f"'{output_filename}': Žádná data."
     elif not data and rows_processed <= 1: final_status = f"'{output_filename}': Vstup prázdný."
     else:
-        if status_label: status_label.config(text=f"Zapisuji {rows_written} řádků do {output_filename}...")
+        if status_label: # Kontrola existence
+             status_label.config(text=f"Zapisuji {rows_written} řádků do {output_filename}...")
     try:
         print(f"+ Zapisuji {rows_written} řádků do '{output_filename}'...")
         with open(output_filepath, 'w', encoding=encoding, newline='') as outfile:
             writer = csv.writer(outfile, delimiter=CSV_DELIMITER); writer.writerow(header); writer.writerows(data)
         print(f"+ Soubor '{output_filename}' uložen.")
         if final_status and status_label: status_label.config(text=final_status)
-    except PermissionError:
-        if status_label: status_label.config(text=f"Chyba zápisu: {output_filename}.")
-        messagebox.showerror("Chyba oprávnění", f"Nelze zapsat:\n'{output_filepath}'.")
-        raise # Předáme dál
-    except Exception as e:
-        if status_label: status_label.config(text=f"Chyba zápisu: {output_filename}.")
-        messagebox.showerror("Chyba zápisu", f"Chyba při zápisu '{output_filename}':\n{e}")
-        raise # Předáme dál
+    except PermissionError: messagebox.showerror("Chyba oprávnění", f"Nelze zapsat:\n'{output_filepath}'."); status_label.config(text=f"Chyba zápisu: {output_filename}."); raise
+    except Exception as e: messagebox.showerror("Chyba zápisu", f"Chyba při zápisu '{output_filename}':\n{e}"); status_label.config(text=f"Chyba zápisu: {output_filename}."); raise
 
 def handle_processing_error(e, input_filepath, encoding, reader):
     """Zpracuje a zobrazí chyby."""
-    global status_label
+    global status_label # Potřebujeme pro .config()
     input_filename = os.path.basename(input_filepath); error_type = type(e).__name__; error_msg = str(e); line_num_msg = ""
-    status_update = f"! Chyba: '{input_filename}'."
+    status_update = f"! Chyba: '{input_filename}'." # Výchozí status
     if isinstance(e, FileNotFoundError): messagebox.showerror("Chyba souboru", f"Soubor nenalezen:\n{input_filepath}"); status_update = f"! Chyba: '{input_filename}' nenalezen."
     elif isinstance(e, LookupError): messagebox.showerror("Chyba kódování", f"Nepodporovaná sada: '{encoding}'.\nZkontrolujte '{ENCODING_FILE}'."); status_update = f"! Chyba: Neplatné kódování '{encoding}'."
     elif isinstance(e, PermissionError): messagebox.showerror("Chyba oprávnění", "Nedostatečná oprávnění."); status_update = "! Chyba: Oprávnění."
     elif isinstance(e, csv.Error): line_num_msg = f" řádek {reader.line_num}" if reader and hasattr(reader, 'line_num') else ""; messagebox.showerror("Chyba CSV", f"Chyba CSV '{input_filename}'{line_num_msg}:\n{error_msg}"); status_update = f"! Chyba CSV: '{input_filename}'."
     else: current_line = reader.line_num if reader and hasattr(reader, 'line_num') else 'N/A'; line_num_msg = f" řádek ~{current_line}"; messagebox.showerror("Neočekávaná chyba", f"Chyba '{error_type}'{line_num_msg} v '{input_filename}':\n{error_msg}"); status_update = f"! Chyba: '{input_filename}'."; import traceback; print(f"! Detail chyby '{input_filename}': {error_type} - {error_msg}"); traceback.print_exc()
-    if status_label: status_label.config(text=status_update)
+    if status_label: status_label.config(text=status_update) # Aktualizujeme status na konci
 
 
 # --- Funkce pro zpracování CSV ---
+# ... (process_texty_csv, process_symboly_csv, process_cary_csv - stejné jako v předchozí odpovědi,
+#      ale ujistěte se, že mají `global status_label` a nemají `root.update_idletasks()`) ...
+# !!!!! Zde vložte tyto 3 funkce z mé předchozí odpovědi (nebo vaší aktuální verze) !!!!!
+# Příklad (jen pro jednu funkci):
 def process_texty_csv(input_filepath, encoding):
     """Zpracuje _texty.csv soubor."""
-    global status_label
+    global status_label # Přístup ke GUI prvkům
     if status_label: status_label.config(text=f"Zpracovávám: {os.path.basename(input_filepath)}...")
     try:
         directory = os.path.dirname(input_filepath); filename, extension = os.path.splitext(os.path.basename(input_filepath))
         output_filename = f"{filename}{OUTPUT_SUFFIX}{extension}"; output_filepath = os.path.join(directory, output_filename)
         if not check_overwrite(output_filepath):
-            if status_label: status_label.config(text=f"Zpracování {output_filename} zrušeno.")
-            return False # Opraveno: unreachable code
+             if status_label: status_label.config(text=f"Zpracování {output_filename} zrušeno.")
+             return False
         filtered_data = []; header = [TEXTY_COLUMN_FILTER]; rows_processed = 0; rows_written = 0; reader = None
         with open(input_filepath, 'r', encoding=encoding, newline='') as infile:
             reader = csv.reader(infile, delimiter=CSV_DELIMITER)
@@ -130,10 +131,10 @@ def process_texty_csv(input_filepath, encoding):
         write_output_file(output_filepath, encoding, header, filtered_data, rows_processed, rows_written, f"'{output_filename}' zpracován.")
         return True
     except (FileNotFoundError, LookupError, PermissionError, csv.Error, Exception) as e: handle_processing_error(e, input_filepath, encoding, reader); return False
-
+# ... (Podobně vložte process_symboly_csv a process_cary_csv) ...
 def process_symboly_csv(input_filepath, encoding):
     """Zpracuje _symboly.csv soubor podle sloupců Typ a Symbol, uloží POUZE Typ."""
-    global status_label
+    global status_label # Přístup ke GUI prvkům
     if status_label: status_label.config(text=f"Zpracovávám: {os.path.basename(input_filepath)}...")
     print(f"\n--- Zpracování {os.path.basename(input_filepath)} (sloupce Typ a Symbol, ukládám jen Typ) ---")
     try:
@@ -141,8 +142,8 @@ def process_symboly_csv(input_filepath, encoding):
         output_filename = f"{filename}{OUTPUT_SUFFIX}{extension}"; output_filepath = os.path.join(directory, output_filename)
         if not check_overwrite(output_filepath):
             if status_label: status_label.config(text=f"Zpracování {output_filename} zrušeno.")
-            return False # Opraveno: unreachable code
-        filtered_data = []; header = [SYMBOLY_COL_TYP]; rows_processed = 0; rows_written = 0
+            return False
+        filtered_data = []; header = [SYMBOLY_COL_TYP]; rows_processed = 0; rows_written = 0 # Header má jen Typ
         reader = None; typ_col_idx = -1; symbol_col_idx = -1
         with open(input_filepath, 'r', encoding=encoding, newline='') as infile:
             reader = csv.reader(infile, delimiter=CSV_DELIMITER)
@@ -174,7 +175,7 @@ def process_symboly_csv(input_filepath, encoding):
 
 def process_cary_csv(input_filepath, encoding):
     """Zpracuje _cary.csv soubor podle sloupců Značení (první) a Specifikace."""
-    global status_label
+    global status_label # Přístup ke GUI
     if status_label: status_label.config(text=f"Zpracovávám: {os.path.basename(input_filepath)}...")
     print(f"\n--- Zpracování {os.path.basename(input_filepath)} (sloupce Značení a Specifikace) ---")
     try:
@@ -182,7 +183,7 @@ def process_cary_csv(input_filepath, encoding):
         output_filename = f"{filename}{OUTPUT_SUFFIX}{extension}"; output_filepath = os.path.join(directory, output_filename)
         if not check_overwrite(output_filepath):
              if status_label: status_label.config(text=f"Zpracování {output_filename} zrušeno.")
-             return False # Opraveno: unreachable code
+             return False
         filtered_data = []; header = [CARY_COL_ZNACENI, CARY_COL_SPECIFIKACE]; rows_processed = 0; rows_written = 0
         reader = None; znaceni_col_idx = -1; specifikace_col_idx = -1
         with open(input_filepath, 'r', encoding=encoding, newline='') as infile:
@@ -200,13 +201,11 @@ def process_cary_csv(input_filepath, encoding):
             for row_index, row in enumerate(reader, start=2):
                 rows_processed += 1
                 try:
-                    # Odsazení opraveno zde
                     if len(row) > max(znaceni_col_idx, specifikace_col_idx):
                         original_znaceni = row[znaceni_col_idx]; original_specifikace = row[specifikace_col_idx]; znaceni_value = original_znaceni.strip()
                         znaceni_ok = ('/' in znaceni_value and ':' in znaceni_value) and not (' ' in znaceni_value or '-' in znaceni_value)
                         if znaceni_ok: filtered_data.append([original_znaceni, original_specifikace]); rows_written += 1
-                    else:
-                        print(f"DEBUG: Řádek {row_index} (_cary) má málo sloupců ({len(row)})")
+                    else: print(f"DEBUG: Řádek {row_index} (_cary) má málo sloupců ({len(row)})")
                 except IndexError: print(f"! CHYBA: IndexError na řádku {row_index} (_cary)!")
                 except Exception as inner_e: print(f"! CHYBA: Neočekávaná chyba řádek {row_index} (_cary): {type(inner_e).__name__} - {inner_e}")
         print(f"--- Ukončeno {os.path.basename(input_filepath)}, Zpracováno: {rows_processed}, Nalezeno: {rows_written} ---")
@@ -218,7 +217,7 @@ def process_cary_csv(input_filepath, encoding):
 # --- Funkce pro Sloučení ---
 def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, output_path, encoding):
     """Sloučí data, odstraní duplicity a uloží výsledek."""
-    global status_label
+    global status_label # Přístup ke GUI
     if status_label: status_label.config(text=f"Slučuji data -> {os.path.basename(output_path)}")
     print(f"\n--- Slučování a deduplikace ---"); print(f"-> {output_path}")
     unique_connections: dict = {} # Type hint
@@ -255,6 +254,8 @@ def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, outpu
                  processed_count += 1
                  if not row: continue
                  connection = row[0]
+                 # !!!!! ZDE BYLA CHYBA v předchozím kódu, bralo se spec = row[1], ale symboly mají jen 1 sloupec !!!!!
+                 # Nyní správně nepotřebujeme specifikaci z tohoto souboru
                  canonical, _, _ = get_canonical(connection)
                  if canonical:
                      if canonical not in unique_connections: unique_connections[canonical] = DEFAULT_SPECIFICATION
@@ -268,6 +269,7 @@ def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, outpu
                  processed_count += 1
                  if not row: continue
                  connection = row[0]
+                 # !!!!! ZDE BYLA CHYBA v předchozím kódu, bralo se spec = row[1], ale texty mají jen 1 sloupec !!!!!
                  canonical, _, _ = get_canonical(connection)
                  if canonical:
                      if canonical not in unique_connections: unique_connections[canonical] = DEFAULT_SPECIFICATION
@@ -295,38 +297,18 @@ def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, outpu
                  connections_in_final.add(connection)
         if duplicates_found > 0: messagebox.showwarning("Kontrola duplicit", f"Nalezeno {duplicates_found} duplicit v '{os.path.basename(output_path)}'."); status_label.config(text=f"Hotovo, ale nalezeny duplicity ({duplicates_found}).")
         else: print("+ Kontrola duplicit OK."); status_label.config(text=f"Soubor {os.path.basename(output_path)} vytvořen a zkontrolován.")
-        # Opraveno: Unreachable code
-        return True # Vždy vrátíme True, pokud kontrola proběhla (i s duplicitami)
-    except Exception as e:
-        print(f"! Chyba kontroly duplicit {output_path}: {e}")
-        messagebox.showerror("Chyba kontroly", f"Chyba kontroly '{output_path}':\n{e}")
-        return False # Chyba při kontrole
-
-# --- Funkce pro výběr souboru v GUI ---
-def select_file(file_type_var, label_widget, suffix_filter):
-    """Otevře dialog pro výběr souboru a aktualizuje globální proměnnou a label."""
-    global texty_filepath, symboly_filepath, cary_filepath, status_label
-    try: initial_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    except Exception: initial_dir = os.getcwd()
-    filetypes = ((f"*{suffix_filter}", f"*{suffix_filter}"), ("CSV soubory", "*.csv"), ("Všechny soubory", "*.*"))
-    filepath = filedialog.askopenfilename( initialdir=initial_dir, title=f"Vyberte soubor končící na {suffix_filter}", filetypes=filetypes)
-    if filepath:
-        if not filepath.lower().endswith(suffix_filter.lower()): messagebox.showwarning("Nesprávný typ souboru", f"Vybraný soubor '{os.path.basename(filepath)}' nekončí na '{suffix_filter}'."); return
-        filename = os.path.basename(filepath)
-        if file_type_var == 'texty': texty_filepath = filepath; label_widget.config(text=f"{filename}")
-        elif file_type_var == 'symboly': symboly_filepath = filepath; label_widget.config(text=f"{filename}")
-        elif file_type_var == 'cary': cary_filepath = filepath; label_widget.config(text=f"{filename}")
-        if status_label: status_label.config(text=f"Soubor '{filename}' vybrán.")
-    else:
-         if status_label: status_label.config(text="Výběr souboru zrušen.")
+        return True
+    except Exception as e: print(f"! Chyba kontroly duplicit {output_path}: {e}"); messagebox.showerror("Chyba kontroly", f"Chyba kontroly '{output_path}':\n{e}"); return False
 
 # --- Třída Editoru ---
-# from collections import Counter # Odstraněn reimport
+# ... (Vložte sem kód třídy SpecEditorApp z mé předchozí odpovědi,
+#      ale PŘEJMENUJTE nepoužívané 'event' argumenty na '_event'
+#      v metodách on_group_select a edit_selected_item_popup) ...
 class SpecEditorApp:
     def __init__(self, parent, input_file, output_file, encoding):
         self.parent = parent; self.input_file = input_file; self.output_file = output_file; self.encoding = encoding
         self.all_data = []; self.items_to_edit_ids = set(); self.group_keys = OrderedDict()
-        self.component_specs = defaultdict(list); self.suggested_specs = {} # Opraveno: Použije se defaultdict z importu
+        self.component_specs = defaultdict(list); self.suggested_specs = {}
         self.editor_window = tk.Toplevel(parent); self.editor_window.title("Editor Specifikací (priprava.csv)"); self.editor_window.geometry("900x600")
         self.editor_window.protocol("WM_DELETE_WINDOW", self.on_close)
         if not self.load_data(): self.on_close(); return
@@ -336,7 +318,7 @@ class SpecEditorApp:
 
     def load_data(self):
         global status_label
-        if status_label: status_label.config(text="Načítám a analyzuji data pro editor...")
+        if status_label: status_label.config(text=f"Načítám a analyzuji data pro editor...")
         print(f"+ Načítám editor: {self.input_file}"); component_names_a = set(); component_names_b = set()
         self.component_specs.clear()
         try:
@@ -371,7 +353,7 @@ class SpecEditorApp:
                 suggestion = self.suggested_specs.get(name); key_base = f"Název B: {name}"; key = key_base
                 if suggestion: key += f" (návrh: '{suggestion}')"
                 if key in self.group_keys:
-                     if " (návrh: '" in key: key = key_base + " (B)";
+                     if f" (návrh: '" in key: key = key_base + " (B)";
                      else: key += " (B)"
                      if key in self.group_keys: key += "_2" # Extrémní případ
                 self.group_keys[key] = lambda item, n=name: item['id'] in self.items_to_edit_ids and item['parsed'] and item['parsed']['b']['name'] == n
@@ -407,7 +389,7 @@ class SpecEditorApp:
         for item_data in self.all_data:
             if filter_func(item_data): self.tree.insert("", tk.END, iid=item_data['id'], values=(item_data['spojeni'], item_data['spec']))
 
-    def on_group_select(self, _event=None): # Opraveno: _event
+    def on_group_select(self, _event=None): # Přejmenováno event na _event
         filter_key = self.group_combo.get(); filter_func = self.group_keys.get(filter_key)
         self.spec_entry.delete(0, tk.END)
         match = re.search(r"\(návrh: '(.*)'\)", filter_key)
@@ -434,7 +416,7 @@ class SpecEditorApp:
         print(f"+ Spec '{new_spec}' aplikována na {updated_count} položek.")
         if updated_count > 0: messagebox.showinfo("Aktualizováno", f"{updated_count} položek aktualizováno.\nZůstávají zobrazeny.", parent=self.editor_window)
 
-    def edit_selected_item_popup(self, _event=None): # Opraveno: _event
+    def edit_selected_item_popup(self, _event=None): # Přejmenováno event na _event
         selected_items = self.tree.selection()
         if not selected_items or len(selected_items) > 1: return
         item_id = selected_items[0]; item_data = next((item for item in self.all_data if item['id'] == item_id), None)
@@ -470,14 +452,13 @@ class SpecEditorApp:
 # --- Funkce pro tlačítka GUI ---
 def run_filter_and_merge():
     """Spustí Fázi 1 (filtrování) a Fázi 2 (sloučení)."""
-    global status_label, texty_filepath, symboly_filepath, cary_filepath # Odebráno global main_root
+    global status_label, texty_filepath, symboly_filepath, cary_filepath
     if not texty_filepath or not symboly_filepath or not cary_filepath: messagebox.showerror("Chybí", "Vyberte prosím všechny 3 vstupní soubory."); return
     file_encoding = read_encoding(ENCODING_FILE);
     if file_encoding is None:
         if status_label: status_label.config(text="Chyba kódování.")
-        return # Opraveno: Chyběl return
+        return
     if status_label: status_label.config(text="Fáze 1: Zpracování vstupů...")
-    # Opraveno odsazení a f-string
     dir1=os.path.dirname(texty_filepath); fn1,e1=os.path.splitext(os.path.basename(texty_filepath)); texty_upr_path=os.path.join(dir1, f"{fn1}{OUTPUT_SUFFIX}{e1}")
     dir2=os.path.dirname(symboly_filepath); fn2,e2=os.path.splitext(os.path.basename(symboly_filepath)); symboly_upr_path=os.path.join(dir2, f"{fn2}{OUTPUT_SUFFIX}{e2}")
     dir3=os.path.dirname(cary_filepath); fn3,e3=os.path.splitext(os.path.basename(cary_filepath)); cary_upr_path=os.path.join(dir3, f"{fn3}{OUTPUT_SUFFIX}{e3}")
@@ -495,7 +476,7 @@ def run_filter_and_merge():
 
 def run_editor():
     """Spustí editor specifikací pro priprava.csv."""
-    global main_root, status_label # main_root je potřeba pro Toplevel
+    global main_root, status_label
     script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     priprava_csv_path = os.path.join(script_dir, FINAL_OUTPUT_FILENAME)
     edited_output_path = os.path.join(script_dir, EDITED_OUTPUT_FILENAME)
@@ -505,13 +486,13 @@ def run_editor():
          if status_label: status_label.config(text="Chyba kódování pro editor.")
          return
     if status_label: status_label.config(text="Spouštím editor specifikací...")
-    # Instance editoru se vytvoří, ale nemusíme ji ukládat do proměnné
+    # Nyní již nepřiřazujeme do proměnné 'editor'
     SpecEditorApp(main_root, priprava_csv_path, edited_output_path, file_encoding)
     # Status se aktualizuje uvnitř editoru
 
 def run_overwrite_original():
     """Přepíše priprava.csv souborem priprava_upr.csv."""
-    global status_label # main_root zde nepotřebujeme
+    global status_label
     script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     priprava_csv_path = os.path.join(script_dir, FINAL_OUTPUT_FILENAME)
     edited_output_path = os.path.join(script_dir, EDITED_OUTPUT_FILENAME)
@@ -519,28 +500,27 @@ def run_overwrite_original():
     confirm = messagebox.askyesno("Potvrdit přepsání", f"Opravdu přepsat '{FINAL_OUTPUT_FILENAME}'\nobsahem souboru '{EDITED_OUTPUT_FILENAME}'?\n\nTato akce je nevratná!", icon='warning')
     if not confirm:
         if status_label: status_label.config(text="Přepsání originálu zrušeno.")
-        return # Opraveno: Chyběl return
+        return
     try:
         print(f"+ Přesouvám '{edited_output_path}' -> '{priprava_csv_path}'")
         shutil.move(edited_output_path, priprava_csv_path)
         messagebox.showinfo("Hotovo", f"Soubor '{FINAL_OUTPUT_FILENAME}' byl úspěšně přepsán.")
         if status_label: status_label.config(text=f"Soubor {FINAL_OUTPUT_FILENAME} přepsán.")
         print(f"+ Soubor '{FINAL_OUTPUT_FILENAME}' přepsán.")
-    except Exception as e:
-        print(f"! Chyba při přepisování: {e}")
-        messagebox.showerror("Chyba", f"Nepodařilo se přepsat '{FINAL_OUTPUT_FILENAME}':\n{e}")
-        if status_label: status_label.config(text="Chyba při přepisování.")
+    except Exception as e: print(f"! Chyba při přepisování: {e}"); messagebox.showerror("Chyba", f"Nepodařilo se přepsat '{FINAL_OUTPUT_FILENAME}':\n{e}"); status_label.config(text="Chyba při přepisování.")
 
 
 # --- Hlavní spuštění GUI ---
 if __name__ == "__main__":
     main_root = tk.Tk()
-    main_root.title("CSV Nástroje v1.2") # Opět zvýšena verze
+    main_root.title("CSV Nástroje v1.1") # Mírně zvýšena verze
 
+    # Styl pro lepší vzhled (volitelné)
     style = ttk.Style()
     try: style.theme_use('vista')
     except tk.TclError: print("Poznámka: Téma 'vista' není dostupné.")
 
+    # Frame pro výběr souborů
     file_frame = ttk.Frame(main_root, padding="10", borderwidth=2, relief=tk.GROOVE); file_frame.pack(fill=tk.X, padx=5, pady=5)
     ttk.Label(file_frame, text="1. Výběr vstupních CSV souborů:", font=('Segoe UI', 9, 'bold')).grid(row=0, column=0, columnspan=2, pady=(0,5), sticky=tk.W)
     select_texty_button = ttk.Button(file_frame, text=f"Vybrat {TEXTY_SUFFIX}", width=20, command=lambda: select_file('texty', texty_label, TEXTY_SUFFIX)); select_texty_button.grid(row=1, column=0, padx=5, pady=2, sticky=tk.W+tk.E)
@@ -550,13 +530,14 @@ if __name__ == "__main__":
     select_cary_button = ttk.Button(file_frame, text=f"Vybrat {CARY_SUFFIX}", width=20, command=lambda: select_file('cary', cary_label, CARY_SUFFIX)); select_cary_button.grid(row=3, column=0, padx=5, pady=2, sticky=tk.W+tk.E)
     cary_label = ttk.Label(file_frame, text="(nevybrán)", anchor=tk.W, width=45); cary_label.grid(row=3, column=1, padx=5, pady=2, sticky=tk.W)
 
+    # Frame pro hlavní akce
     action_frame = ttk.Frame(main_root, padding="10", borderwidth=2, relief=tk.GROOVE); action_frame.pack(fill=tk.X, padx=5, pady=5)
     ttk.Label(action_frame, text="2. Zpracování a Editace:", font=('Segoe UI', 9, 'bold')).pack(anchor=tk.W, pady=(0,5))
     process_button = ttk.Button(action_frame, text=f"Zpracovat vstupy a Sloučit do '{FINAL_OUTPUT_FILENAME}'", command=run_filter_and_merge); process_button.pack(pady=5, fill=tk.X)
     edit_button = ttk.Button(action_frame, text=f"Editovat Specifikace v '{FINAL_OUTPUT_FILENAME}'", command=run_editor); edit_button.pack(pady=5, fill=tk.X)
     overwrite_button = ttk.Button(action_frame, text=f"Aktualizovat '{FINAL_OUTPUT_FILENAME}' upraveným souborem", command=run_overwrite_original); overwrite_button.pack(pady=5, fill=tk.X)
 
-    # Uložení reference na status_label do globální proměnné
+    # Stavový řádek
     status_label = ttk.Label(main_root, text="Připraven. Vyberte vstupní soubory.", relief=tk.SUNKEN, anchor=tk.W, padding=(5,2)); status_label.pack(fill=tk.X, side=tk.BOTTOM, ipady=2)
 
     main_root.mainloop()
