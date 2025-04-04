@@ -4,6 +4,7 @@
 
 import csv
 import os
+import re
 from tkinter import messagebox # Potřebujeme pro process_... funkce (zobrazují chyby)
 
 # Importy z našich modulů
@@ -72,8 +73,8 @@ def process_symboly_csv(input_filepath, encoding, output_filepath):
                     typ_col_idx = input_header.index(config.SYMBOLY_COL_TYP); symbol_col_idx = input_header.index(config.SYMBOLY_COL_SYMBOL)
                     print(f"DEBUG Indexy: '{config.SYMBOLY_COL_TYP}'={typ_col_idx}, '{config.SYMBOLY_COL_SYMBOL}'={symbol_col_idx}")
                 except ValueError as ve:
-                     missing_col = str(ve).split("'")[1] if "'" in str(ve) else "Neznámý"; expected = f"'{config.SYMBOLY_COL_TYP}' nebo '{config.SYMBOLY_COL_SYMBOL}'"
-                     print(f"! CHYBA: Chybí sloupec '{missing_col}'."); messagebox.showerror("Chyba", f"Sloupec {expected} nebyl nalezen v '{os.path.basename(input_filepath)}'."); return False, ""
+                    missing_col = str(ve).split("'")[1] if "'" in str(ve) else "Neznámý"; expected = f"'{config.SYMBOLY_COL_TYP}' nebo '{config.SYMBOLY_COL_SYMBOL}'"
+                    print(f"! CHYBA: Chybí sloupec '{missing_col}'."); messagebox.showerror("Chyba", f"Sloupec {expected} nebyl nalezen v '{os.path.basename(input_filepath)}'."); return False, ""
             except StopIteration: print("! CHYBA: Soubor je prázdný."); messagebox.showerror("Chyba", f"Soubor '{os.path.basename(input_filepath)}' je prázdný."); return False, ""
             for row_index, row in enumerate(reader, start=2):
                 rows_processed += 1
@@ -130,7 +131,7 @@ def process_cary_csv(input_filepath, encoding, output_filepath):
             print(f"+ Čáry zpracovány: {rows_written} řádků zapsáno do {os.path.basename(output_filepath)}")
             return True, output_filepath
         else:
-             return False, ""
+            return False, ""
     except Exception as e: handle_processing_error(e, input_filepath, reader, None); return False, ""
 
 
@@ -171,8 +172,17 @@ def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, outpu
                         skipped_no_parse += 1
                         print(f"! Varování ({file_type_label} řádek {row_idx}): Nelze zpracovat spojení '{connection}'")
 
-        except FileNotFoundError: print(f"! Chyba: {os.path.basename(file_path)} nenalezen."); success = False; break
-        except Exception as e: print(f"! Chyba čtení {os.path.basename(file_path)}: {e}"); success = False; break
+        except FileNotFoundError:
+            msg = f"{os.path.basename(file_path)} nenalezen."
+            print(f"! Chyba: {msg}")
+            if message_queue: message_queue.put(('messagebox', 'error', "Chyba sloučení", msg)) # <-- Nový formát
+            success = False; break
+        except Exception as e:
+            msg = f"Chyba čtení {os.path.basename(file_path)}: {e}"
+            print(f"! Chyba: {msg}")
+            # Zde by bylo lepší volat handle_processing_error, ale pro rychlou opravu stačí toto:
+            if message_queue: message_queue.put(('messagebox', 'error', "Chyba sloučení", msg)) # <-- Nový formát
+            success = False; break
 
     if not success:
         if message_queue: message_queue.put(('error', "Chyba sloučení", "Nepodařilo se načíst data pro sloučení."))
@@ -186,8 +196,8 @@ def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, outpu
                                           [[conn, spec] for conn, spec in sorted(unique_connections.items())])
         if not success_write: return False
     except Exception as e:
-         if message_queue: message_queue.put(('error', "Chyba zápisu", f"Nepodařilo se zapsat výsledný soubor '{output_path}':\n{e}"))
-         return False
+        if message_queue: message_queue.put(('error', "Chyba zápisu", f"Nepodařilo se zapsat výsledný soubor '{output_path}':\n{e}"))
+        return False
 
     try: # Kontrola duplicit
         if message_queue: message_queue.put(('status', f"Kontrola duplicit v {os.path.basename(output_path)}..."))
@@ -195,14 +205,14 @@ def merge_and_deduplicate(cary_upr_path, symboly_upr_path, texty_upr_path, outpu
         with open(output_path, 'r', encoding=encoding, newline='') as f:
             reader = csv.reader(f, delimiter=config.CSV_DELIMITER); next(reader)
             for row_idx, row in enumerate(reader, start=2):
-                 if not row: continue; connection = row[0]
-                 if connection in connections_in_final: duplicates_found += 1; print(f"! Varování: Duplicita v {os.path.basename(output_path)} řádek {row_idx}: '{connection}'")
-                 connections_in_final.add(connection)
+                if not row: continue; connection = row[0]
+                if connection in connections_in_final: duplicates_found += 1; print(f"! Varování: Duplicita v {os.path.basename(output_path)} řádek {row_idx}: '{connection}'")
+                connections_in_final.add(connection)
 
         final_status_msg = f"Soubor {os.path.basename(output_path)} vytvořen a zkontrolován."
         if duplicates_found > 0:
-             final_status_msg = f"Hotovo, ale nalezeny duplicity ({duplicates_found})."
-             if message_queue: message_queue.put(('warning', "Kontrola duplicit", f"Nalezeno {duplicates_found} duplicit v '{os.path.basename(output_path)}'."))
+            final_status_msg = f"Hotovo, ale nalezeny duplicity ({duplicates_found})."
+            if message_queue: message_queue.put(('warning', "Kontrola duplicit", f"Nalezeno {duplicates_found} duplicit v '{os.path.basename(output_path)}'."))
         else: print("+ Kontrola duplicit OK.")
 
         if message_queue: message_queue.put(('status', final_status_msg))

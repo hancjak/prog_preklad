@@ -25,6 +25,20 @@ texty_label = None; symboly_label = None; cary_label = None
 process_button = None; edit_button = None; overwrite_button = None # Přidány reference na tlačítka
 processing_queue = None # Fronta pro komunikaci s workerem
 is_processing = False # Flag pro indikaci běžícího procesu
+# --- Definice cest ---
+# Získání adresáře, kde se nachází spuštěný skript
+script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+# Definice cesty k podadresáři 'files'
+files_dir = os.path.join(script_dir, "files")
+
+# Zajistíme, že adresář 'files' existuje, pokud ne, vytvoříme ho
+try:
+    os.makedirs(files_dir, exist_ok=True)
+    print(f"+ Pracovní adresář pro výstupy: {files_dir}")
+except OSError as e:
+    messagebox.showerror("Chyba vytváření adresáře", f"Nepodařilo se vytvořit adresář '{files_dir}':\n{e}")
+    # Možná zde ukončit aplikaci, pokud je adresář kritický
+    sys.exit(1) # Ukončíme, pokud nelze vytvořit adresář
 
 # --- Funkce pro GUI ---
 
@@ -153,17 +167,16 @@ def run_filter_and_merge():
         messagebox.showerror("Chybí", "Vyberte prosím všechny 3 vstupní soubory.")
         return
 
-    file_encoding = read_encoding();
+    file_encoding = read_encoding(files_dir) # Předáme files_dir jako base_dir
     if file_encoding is None:
         if status_label: status_label.config(text="Chyba kódování.")
         return
 
     # Cesty k výstupním souborům
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    dir1=os.path.dirname(texty_filepath); fn1,e1=os.path.splitext(os.path.basename(texty_filepath)); texty_upr_path=os.path.join(dir1, f"{fn1}{config.OUTPUT_SUFFIX}{e1}")
-    dir2=os.path.dirname(symboly_filepath); fn2,e2=os.path.splitext(os.path.basename(symboly_filepath)); symboly_upr_path=os.path.join(dir2, f"{fn2}{config.OUTPUT_SUFFIX}{e2}")
-    dir3=os.path.dirname(cary_filepath); fn3,e3=os.path.splitext(os.path.basename(cary_filepath)); cary_upr_path=os.path.join(dir3, f"{fn3}{config.OUTPUT_SUFFIX}{e3}")
-    priprava_csv_path = os.path.join(script_dir, config.FINAL_OUTPUT_FILENAME)
+    fn1,e1=os.path.splitext(os.path.basename(texty_filepath)); texty_upr_path=os.path.join(files_dir, f"{fn1}{config.OUTPUT_SUFFIX}{e1}")
+    fn2,e2=os.path.splitext(os.path.basename(symboly_filepath)); symboly_upr_path=os.path.join(files_dir, f"{fn2}{config.OUTPUT_SUFFIX}{e2}")
+    fn3,e3=os.path.splitext(os.path.basename(cary_filepath)); cary_upr_path=os.path.join(files_dir, f"{fn3}{config.OUTPUT_SUFFIX}{e3}")
+    priprava_csv_path = os.path.join(files_dir, config.FINAL_OUTPUT_FILENAME) # Změna zde
 
     # !!!!! Kontrola přepsání PŘED spuštěním vlákna !!!!!
     output_files_to_check = [texty_upr_path, symboly_upr_path, cary_upr_path, priprava_csv_path]
@@ -175,10 +188,10 @@ def run_filter_and_merge():
 
     # Připravit argumenty pro worker
     paths_for_worker = (
-        texty_filepath, symboly_filepath, cary_filepath,
-        texty_upr_path, symboly_upr_path, cary_upr_path,
-        priprava_csv_path
-    )
+            texty_filepath, symboly_filepath, cary_filepath, # Vstupy zůstávají (uživatel je vybral)
+            texty_upr_path, symboly_upr_path, cary_upr_path, # Výstupy nyní míří do 'files'
+            priprava_csv_path # Finální výstup také míří do 'files'
+        )
 
     # Spustit zpracování ve vlákně
     processing_queue = queue.Queue()
@@ -202,14 +215,19 @@ def run_editor():
     global main_root, status_label, is_processing
     if is_processing: messagebox.showwarning("Zpracování běží", "Počkejte na dokončení filtrování/slučování."); return
 
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    priprava_csv_path = os.path.join(script_dir, config.FINAL_OUTPUT_FILENAME)
-    edited_output_path = os.path.join(script_dir, config.EDITED_OUTPUT_FILENAME)
-    if not os.path.exists(priprava_csv_path): messagebox.showerror("Chyba", f"Soubor '{config.FINAL_OUTPUT_FILENAME}' nenalezen."); status_label.config(text=f"{config.FINAL_OUTPUT_FILENAME} nenalezen."); return
-    file_encoding = read_encoding();
+    priprava_csv_path = os.path.join(files_dir, config.FINAL_OUTPUT_FILENAME) # Změna zde
+    edited_output_path = os.path.join(files_dir, config.EDITED_OUTPUT_FILENAME) # Změna zde
+    
+    if not os.path.exists(priprava_csv_path):
+        messagebox.showerror("Chyba", f"Soubor '{config.FINAL_OUTPUT_FILENAME}' nenalezen v adresáři '{os.path.basename(files_dir)}'.");
+        if status_label: status_label.config(text=f"{config.FINAL_OUTPUT_FILENAME} nenalezen v '{os.path.basename(files_dir)}'.");
+        return
+    
+    file_encoding = read_encoding(files_dir);
     if file_encoding is None:
         if status_label: status_label.config(text="Chyba kódování pro editor."); return
     if status_label: status_label.config(text="Spouštím editor...")
+    # SpecEditorApp dostane cesty, které už vedou do 'files'
     SpecEditorApp(main_root, priprava_csv_path, edited_output_path, file_encoding, status_label)
 
 
@@ -218,18 +236,22 @@ def run_overwrite_original():
     global status_label, is_processing
     if is_processing: messagebox.showwarning("Zpracování běží", "Počkejte na dokončení."); return
 
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    priprava_csv_path = os.path.join(script_dir, config.FINAL_OUTPUT_FILENAME)
-    edited_output_path = os.path.join(script_dir, config.EDITED_OUTPUT_FILENAME)
-    if not os.path.exists(edited_output_path): messagebox.showerror("Chyba", f"'{config.EDITED_OUTPUT_FILENAME}' nenalezen."); status_label.config(text=f"{config.EDITED_OUTPUT_FILENAME} nenalezen."); return
-    confirm = messagebox.askyesno("Potvrdit přepsání", f"Opravdu přepsat '{config.FINAL_OUTPUT_FILENAME}'?", icon='warning')
+    priprava_csv_path = os.path.join(files_dir, config.FINAL_OUTPUT_FILENAME) # Změna zde
+    edited_output_path = os.path.join(files_dir, config.EDITED_OUTPUT_FILENAME) # Změna zde
+    
+    if not os.path.exists(edited_output_path):
+        messagebox.showerror("Chyba", f"'{config.EDITED_OUTPUT_FILENAME}' nenalezen v adresáři '{os.path.basename(files_dir)}'.");
+        if status_label: status_label.config(text=f"{config.EDITED_OUTPUT_FILENAME} nenalezen v '{os.path.basename(files_dir)}'.");
+        return
+
+    confirm = messagebox.askyesno("Potvrdit přepsání", f"Opravdu přepsat '{config.FINAL_OUTPUT_FILENAME}' v adresáři '{os.path.basename(files_dir)}'?", icon='warning')
     if not confirm:
         if status_label: status_label.config(text="Přepsání originálu zrušeno."); return
     try:
         print(f"+ Přesouvám '{edited_output_path}' -> '{priprava_csv_path}'")
-        shutil.move(edited_output_path, priprava_csv_path)
-        messagebox.showinfo("Hotovo", f"'{config.FINAL_OUTPUT_FILENAME}' přepsán.")
-        if status_label: status_label.config(text=f"{config.FINAL_OUTPUT_FILENAME} přepsán.")
+        shutil.move(edited_output_path, priprava_csv_path) # move pracuje se správnými cestami
+        messagebox.showinfo("Hotovo", f"'{config.FINAL_OUTPUT_FILENAME}' v '{os.path.basename(files_dir)}' přepsán.")
+        if status_label: status_label.config(text=f"{config.FINAL_OUTPUT_FILENAME} přepsán v '{os.path.basename(files_dir)}'.")
         print(f"+ '{config.FINAL_OUTPUT_FILENAME}' přepsán.")
     except Exception as e: print(f"! Chyba při přepisování: {e}"); messagebox.showerror("Chyba", f"Nelze přepsat '{config.FINAL_OUTPUT_FILENAME}':\n{e}"); status_label.config(text="Chyba při přepisování.")
 

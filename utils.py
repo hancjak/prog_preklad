@@ -3,7 +3,6 @@
 """Pomocné funkce pro CSV nástroje."""
 
 import os
-import sys
 import re
 import csv
 from tkinter import messagebox
@@ -29,17 +28,35 @@ def parse_connection(connection_string):
     if not comp_a or not comp_b or comp_a['pin'] is None or comp_b['pin'] is None: return None
     return {"a": comp_a, "b": comp_b}
 
-def read_encoding(filename=config.ENCODING_FILE):
+def read_encoding(base_dir, filename=config.ENCODING_FILE):
+    encoding_filepath = os.path.join(base_dir, filename) # Sestavení cesty
+    encoding_filename_only = os.path.basename(encoding_filepath) # Pro zprávy
+    print(f"+ Hledám znakovou sadu v: {encoding_filepath}")
     try:
-        script_dir = os.path.dirname(os.path.abspath(sys.argv[0])); encoding_filepath = os.path.join(script_dir, filename)
-        with open(encoding_filepath, 'r', encoding='utf-8') as f: first_line = f.readline().strip()
+        with open(encoding_filepath, 'r', encoding='utf-8') as f: # Čteme konfigurační soubor vždy jako utf-8
+            first_line = f.readline().strip()
         if first_line:
-            try: "test".encode(first_line); print(f"+ Znak. sada: {first_line}"); return first_line
-            except LookupError: print(f"! Chyba: Neplatná znak. sada '{first_line}'. Používám: {config.DEFAULT_ENCODING}"); messagebox.showwarning("Chyba kódování", f"Neplatná sada '{first_line}'.\nBude použito: {config.DEFAULT_ENCODING}"); return config.DEFAULT_ENCODING
-        else: print(f"! Chyba: Soubor '{filename}' prázdný. Používám: {config.DEFAULT_ENCODING}"); messagebox.showwarning("Chyba kódování", f"Soubor '{filename}' prázdný.\nBude použito: {config.DEFAULT_ENCODING}"); return config.DEFAULT_ENCODING
-    except FileNotFoundError: print(f"! Chyba: Soubor '{filename}' nenalezen. Používám: {config.DEFAULT_ENCODING}"); messagebox.showwarning("Chyba konfigurace", f"Soubor '{filename}' nenalezen.\nBude použito: {config.DEFAULT_ENCODING}"); return config.DEFAULT_ENCODING
-    except Exception as e: print(f"! Chyba při čtení '{filename}': {e}. Používám: {config.DEFAULT_ENCODING}"); messagebox.showerror("Chyba konfigurace", f"Chyba při čtení '{filename}':\n{e}\nBude použito: {config.DEFAULT_ENCODING}"); return None
-
+            try:
+                "test".encode(first_line) # Otestujeme platnost kódování
+                print(f"+ Znaková sada nalezena: {first_line}")
+                return first_line
+            except LookupError:
+                print(f"! Chyba: Neplatná znaková sada '{first_line}' v '{encoding_filename_only}'. Používám: {config.DEFAULT_ENCODING}")
+                messagebox.showwarning("Chyba kódování", f"Neplatná sada '{first_line}' v '{encoding_filename_only}'.\nBude použito: {config.DEFAULT_ENCODING}")
+                return config.DEFAULT_ENCODING
+        else:
+            print(f"! Chyba: Soubor '{encoding_filename_only}' je prázdný. Používám: {config.DEFAULT_ENCODING}")
+            messagebox.showwarning("Chyba kódování", f"Soubor '{encoding_filename_only}' je prázdný.\nBude použito: {config.DEFAULT_ENCODING}")
+            return config.DEFAULT_ENCODING
+    except FileNotFoundError:
+        print(f"! Chyba: Soubor '{encoding_filename_only}' nenalezen v '{base_dir}'. Používám: {config.DEFAULT_ENCODING}")
+        messagebox.showwarning("Chyba konfigurace", f"Soubor '{encoding_filename_only}' nenalezen.\nBude použito: {config.DEFAULT_ENCODING}")
+        return config.DEFAULT_ENCODING
+    except Exception as e:
+        print(f"! Chyba při čtení '{encoding_filename_only}': {e}. Používám: {config.DEFAULT_ENCODING}")
+        messagebox.showerror("Chyba konfigurace", f"Chyba při čtení '{encoding_filename_only}':\n{e}\nBude použito: {config.DEFAULT_ENCODING}")
+        return None # None značí kritickou chybu čtení
+        
 def check_overwrite(output_filepath):
     """Zkontroluje existenci souboru a zeptá se na přepsání (voláno z hlavního vlákna)."""
     if os.path.exists(output_filepath):

@@ -26,7 +26,8 @@ class SpecEditorApp:
         self.editor_window.title(f"Editor Specifikací - {os.path.basename(input_file)}")
         self.editor_window.geometry("900x600")
         self.editor_window.protocol("WM_DELETE_WINDOW", self.on_close)
-
+        self.show_all_var = tk.BooleanVar(value=False) # <<< PŘIDÁNO: Proměnná pro checkbox
+        
         if not self.load_data(): self.on_close(); return
         self.create_widgets(); self.populate_treeview()
 
@@ -62,7 +63,15 @@ class SpecEditorApp:
                 for i, row in enumerate(reader):
                     if len(row) != 2: print(f"! Varování editor: Přeskakuji řádek {i+2}: {row}"); continue
                     spojeni, spec_raw = row; spec = spec_raw.strip(); parsed_data = parse_connection(spojeni); item_id = f"item_{i}"
-                    self.all_data.append({"id": item_id, "spojeni": spojeni, "spec": spec, "parsed": parsed_data})
+                    original_line_number = i + 2 # !!! PŘIDÁNO: Uložíme číslo řádku (i je od 0, +1 za header, +1 za start od 1) !!!
+
+                    self.all_data.append({
+                        "id": item_id,
+                        "spojeni": spojeni,
+                        "spec": spec,
+                        "parsed": parsed_data,
+                        "line_num": original_line_number # !!! PŘIDÁNO: Uložíme do slovníku !!!
+                        })
                     current_spec_lower = spec.lower(); is_default_spec = current_spec_lower == config.DEFAULT_SPECIFICATION.lower() or not spec
                     if is_default_spec: self.items_to_edit_ids.add(item_id)
                     if parsed_data:
@@ -99,47 +108,148 @@ class SpecEditorApp:
             return True
         except FileNotFoundError: messagebox.showerror("Chyba souboru", f"Vstup '{self.input_file}' nenalezen.", parent=self.editor_window); return False
         except Exception as e: messagebox.showerror("Chyba načítání", f"Chyba načítání editoru:\n{e}", parent=self.editor_window); print(f"! Chyba load_data: {e}"); import traceback; traceback.print_exc(); return False
-
+    
     def create_widgets(self):
         """Vytvoří prvky GUI v editor okně."""
-        # ... (kód pro tvorbu widgetů - stejný jako předtím) ...
         top_frame = ttk.Frame(self.editor_window, padding="10"); top_frame.pack(side=tk.TOP, fill=tk.X)
+          # --- Prvky v horním rámci (upraveno rozložení) ---
         ttk.Label(top_frame, text="Zobrazit skupinu:").grid(row=0, column=0, padx=(0, 5), sticky=tk.W)
-        self.group_combo = ttk.Combobox(top_frame, values=list(self.group_keys.keys()), state="readonly", width=60); self.group_combo.grid(row=0, column=1, padx=(0, 20), sticky=tk.W)
-        if self.group_keys: self.group_combo.current(0); self.group_combo.bind("<<ComboboxSelected>>", self.on_group_select)
-        ttk.Label(top_frame, text="Nová specifikace:").grid(row=0, column=2, padx=(10, 5), sticky=tk.W)
-        self.spec_entry = ttk.Entry(top_frame, width=40); self.spec_entry.grid(row=0, column=3, padx=(0, 10), sticky=tk.W+tk.E)
-        self.apply_button = ttk.Button(top_frame, text="Přiřadit skupině", command=self.apply_to_group); self.apply_button.grid(row=0, column=4, padx=(0, 5))
-        tree_frame = ttk.Frame(self.editor_window, padding="10"); tree_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        columns = ("#0", "spojeni", "spec"); self.tree = ttk.Treeview(tree_frame, columns=columns[1:], show="headings", height=15)
-        self.tree.heading("spojeni", text="Spojení"); self.tree.heading("spec", text="Specifikace")
-        self.tree.column("spojeni", width=400, anchor=tk.W); self.tree.column("spec", width=300, anchor=tk.W)
-        vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview); hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.tree.xview)
-        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set); vsb.pack(side=tk.RIGHT, fill=tk.Y); hsb.pack(side=tk.BOTTOM, fill=tk.X); self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.tree.config(selectmode='extended'); self.tree.bind("<Double-1>", self.edit_selected_item_popup)
+        self.group_combo = ttk.Combobox(top_frame, values=list(self.group_keys.keys()), state="readonly", width=45); # Možná zúžit šířku
+        self.group_combo.grid(row=0, column=1, padx=(0, 10), sticky=tk.W+tk.E)
+        if self.group_keys:
+            self.group_combo.current(0)
+            self.group_combo.bind("<<ComboboxSelected>>", self.on_filter_change) # <<< ZMĚNA: Volá on_filter_change
+
+    # <<< PŘIDÁNO: Checkbox "Zobrazit vše" >>>
+        self.show_all_check = ttk.Checkbutton(
+            top_frame,
+            text="Zobrazit vše",
+            variable=self.show_all_var,
+            command=self.on_filter_change # <<< Volá stejnou funkci při změně
+        )
+        self.show_all_check.grid(row=0, column=2, padx=(5, 20), sticky=tk.W)
+        # <<< Konec přidání checkboxu >>>
+        # Nastavení roztažitelnosti sloupců v top_frame (volitelné, pro lepší resize)
+        top_frame.columnconfigure(1, weight=1) # Combobox se roztáhne
+        top_frame.columnconfigure(4, weight=1) # Entry se roztáhne
+
+            
+        ttk.Label(top_frame, text="Nová specifikace:").grid(row=0, column=3, padx=(10, 5), sticky=tk.W) # Posunuto na sloupec 3
+        self.spec_entry = ttk.Entry(top_frame, width=30); # Možná zúžit
+        self.spec_entry.grid(row=0, column=4, padx=(0, 10), sticky=tk.W+tk.E) # Posunuto na sloupec 4
+        self.apply_button = ttk.Button(top_frame, text="Přiřadit skupině", command=self.apply_to_group)
+        self.apply_button.grid(row=0, column=5, padx=(0, 5)) # Posunuto na sloupec 5
+
+        # --- Opravený blok pro Treeview ---
+        tree_frame = ttk.Frame(self.editor_window, padding="10");
+        tree_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        # Definice sloupců (včetně nového pro číslo řádku)
+        columns = ("line", "spojeni", "spec") # Bez "#0"
+
+        # Vytvoření Treeview s definovanými sloupci
+        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=15)
+
+        # Konfigurace hlaviček sloupců (PO vytvoření self.tree)
+        self.tree.heading("line", text="#")
+        self.tree.heading("spojeni", text="Spojení")
+        self.tree.heading("spec", text="Specifikace")
+
+        # Konfigurace vlastností sloupců (PO vytvoření self.tree)
+        self.tree.column("line", width=50, anchor=tk.CENTER, stretch=tk.NO) # stretch=tk.NO zabrání roztažení sloupce
+        self.tree.column("spojeni", width=400, anchor=tk.W)
+        self.tree.column("spec", width=300, anchor=tk.W)
+
+        # Definice tagů pro řádkování (PO vytvoření self.tree)
+        self.tree.tag_configure('oddrow', background='#f0f0f0')
+        self.tree.tag_configure('evenrow', background='white')
+
+        # Scrollbary
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
+        hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.tree.xview)
+        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+
+        # Umístění prvků do tree_frame
+        vsb.pack(side=tk.RIGHT, fill=tk.Y)
+        hsb.pack(side=tk.BOTTOM, fill=tk.X)
+        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # --- Konec opraveného bloku ---
+        
+
+        self.tree.config(selectmode='extended')
+        self.tree.bind("<Double-1>", self.edit_selected_item_popup)
+
         bottom_frame = ttk.Frame(self.editor_window, padding="10"); bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
         self.save_button = ttk.Button(bottom_frame, text="Uložit změny do " + os.path.basename(self.output_file), command=self.save_changes); self.save_button.pack(side=tk.RIGHT)
         self.cancel_button = ttk.Button(bottom_frame, text="Zavřít editor", command=self.on_close); self.cancel_button.pack(side=tk.RIGHT, padx=10)
 
 
     def populate_treeview(self, filter_func=None):
-        """Naplní Treeview daty podle filtru."""
-        # ... (stejné) ...
-        for item in self.tree.get_children(): self.tree.delete(item)
-        if filter_func is None: filter_key = self.group_combo.get(); filter_func = self.group_keys.get(filter_key, lambda item: False)
-        for item_data in self.all_data:
-            if filter_func(item_data): self.tree.insert("", tk.END, iid=item_data['id'], values=(item_data['spojeni'], item_data['spec']))
+        """Naplní Treeview daty podle filtru, zobrazí číslo řádku a aplikuje řádkování."""
+        for item in self.tree.get_children():
+            self.tree.delete(item)
 
-    def on_group_select(self, _event=None):
-        """Reakce na změnu výběru ve skupinovém Comboboxu - PŘEDVYPLNÍ NÁVRH."""
-        # ... (stejné) ...
-        filter_key = self.group_combo.get(); filter_func = self.group_keys.get(filter_key)
+        # --- Určení filtru na základě checkboxu a comboboxu ---
+        if self.show_all_var.get():
+        # Pokud je zaškrtnuto "Zobrazit vše", ignorujeme combobox
+            filter_func = lambda item: True
+            print("+ Zobrazuji všechny položky.")
+        else:
+        # Pokud není zaškrtnuto, použijeme filtr z comboboxu
+            filter_key = self.group_combo.get()
+            filter_func = self.group_keys.get(filter_key, lambda item: False) # Výchozí je neukázat nic, pokud klíč není
+            print(f"+ Filtruji podle skupiny: '{filter_key}'")
+        # --- Konec určení filtru ---
+
+        row_counter = 0
+        for item_data in self.all_data:
+            # !!! Tento IF je důležitý !!!
+            if filter_func(item_data):
+                # --- Všechny následující řádky musí být odsazeny pod tento IF ---
+                current_tag = 'oddrow' if row_counter % 2 != 0 else 'evenrow'
+                line_num_val = item_data.get('line_num', '')
+                values_tuple = (
+                    line_num_val,
+                    item_data['spojeni'],
+                    item_data['spec']
+                )
+                self.tree.insert("", tk.END, iid=item_data['id'], values=values_tuple, tags=(current_tag,))
+                row_counter += 1
+                # --- Konec bloku, který má být odsazen ---
+        # Aktualizace statusu počtu zobrazených položek (volitelné)
+        displayed_count = len(self.tree.get_children())
+        total_count = len(self.all_data)
+        status_text = f"Zobrazeno {displayed_count} z {total_count} položek."
+        # Můžeš zde zavolat self.update_main_status nebo nastavit lokální status bar, pokud bys ho přidal do editoru
+        print(f"+ {status_text}")
+
+   # <<< TOTO JE TA SPRÁVNÁ METODA, KTERÁ SE VOLÁ >>>
+    def on_filter_change(self, _event=None):
+        """Reakce na změnu filtru (Combobox nebo Checkbox)."""
+        filter_key = self.group_combo.get()
+
+        # --- Logika pro návrh ---
         self.spec_entry.delete(0, tk.END)
         match = re.search(r"\(návrh: '(.*)'\)", filter_key)
-        if match: suggested_spec = match.group(1); self.spec_entry.insert(0, suggested_spec); print(f"+ Návrh: '{suggested_spec}' pro '{filter_key}'")
-        if filter_func: self.populate_treeview(filter_func)
-        else: print(f"! Chyba filtru: '{filter_key}'")
+        if match:
+            suggested_spec = match.group(1)
+            self.spec_entry.insert(0, suggested_spec)
+            print(f"+ Návrh: '{suggested_spec}' pro '{filter_key}'")
+        # --- Konec logiky pro návrh ---
 
+        # <<< SMAZAT následující dva řádky (volání populate_treeview z podmínky) >>>
+        # if filter_func: self.populate_treeview(filter_func) # TOTO SMAZAT
+        # else: print(f"! Chyba filtru: '{filter_key}'")      # TOTO SMAZAT
+
+        # <<< PONECHAT pouze toto jedno volání na konci metody >>>
+        # Vždy znovu naplnit Treeview podle aktuálního stavu filtru a checkboxu
+        self.populate_treeview()
+
+    # <<< SMAZAT CELOU TUTO METODU >>>
+    # def on_filter_select(self, _event=None):
+    #     """Reakce na změnu výběru ve skupinovém Comboboxu - PŘEDVYPLNÍ NÁVRH."""
+    #     # ... (celý obsah této metody smazat) ...
+    
     def apply_to_group(self):
         """Aplikuje specifikaci z Entry na všechny viditelné řádky v Treeview,
            ale nechá je viditelné."""
@@ -156,9 +266,16 @@ class SpecEditorApp:
                 if item_data['id'] == item_id:
                     item_data['spec'] = new_spec
                     if item_id in self.items_to_edit_ids: self.items_to_edit_ids.remove(item_id)
-                    try: self.tree.item(item_id, values=(item_data['spojeni'], new_spec))
-                    except tk.TclError: print(f"! Varování: Aktualizace Treeview selhala pro {item_id}.")
-                    updated_count += 1; break
+                    try:
+                        # !!! UPRAVENO: Předáme hodnoty pro všechny sloupce !!!
+                        # Získáme číslo řádku z původních dat
+                        original_item = next((item for item in self.all_data if item['id'] == item_id), None)
+                        line_num_val = original_item.get('line_num', '') if original_item else ''
+                        self.tree.item(item_id, values=(line_num_val, item_data['spojeni'], new_spec)) # Přidáno line_num_val
+                    except tk.TclError:
+                        print(f"! Varování: Aktualizace Treeview selhala pro {item_id}.")
+                    updated_count += 1
+                    break # Nalezeno a aktualizováno, přejdi na další item_id
         print(f"+ Spec '{new_spec}' aplikována na {updated_count} položek.")
         if updated_count > 0: messagebox.showinfo("Aktualizováno", f"{updated_count} položek aktualizováno.\nZůstávají zobrazeny.", parent=self.editor_window)
 
@@ -175,7 +292,10 @@ class SpecEditorApp:
             new_spec_lower = item_data['spec'].lower(); is_default = new_spec_lower == config.DEFAULT_SPECIFICATION.lower() or not new_spec_lower
             if item_id in self.items_to_edit_ids and not is_default: self.items_to_edit_ids.remove(item_id)
             elif item_id not in self.items_to_edit_ids and is_default: self.items_to_edit_ids.add(item_id)
-            self.tree.item(item_id, values=(item_data['spojeni'], item_data['spec'])); print(f"+ Položka {item_id} upravena na '{item_data['spec']}'")
+            # !!! UPRAVENO: Předáme hodnoty pro všechny sloupce !!!
+            line_num_val = item_data.get('line_num', '')
+            self.tree.item(item_id, values=(line_num_val, item_data['spojeni'], item_data['spec'])) # Přidáno line_num_val
+            print(f"+ Položka {item_id} (řádek {line_num_val}) upravena na '{item_data['spec']}'") # Můžeme přidat info o řádku do logu
 
     def save_changes(self):
         """Uloží všechna data (včetně upravených) do výstupního souboru."""
