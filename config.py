@@ -33,3 +33,6 @@ CARY_ZNACENI_FORBIDDEN_CHARS = [" ", "-"]
 FINAL_OUTPUT_FILENAME = "priprava.csv" # Výstup sloučení
 EDITED_OUTPUT_FILENAME = "priprava_upr.csv" # Výstup editoru
 DEFAULT_SPECIFICATION = "neni spec" # Výchozí text pro chybějící specifikaci
+
+# !!!!! PŘIDÁNO: Soubor pro předdefinované texty editoru !!!!!
+EDITOR_PRESETS_FILE = "editor_presets.txt"

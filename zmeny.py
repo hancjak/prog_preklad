@@ -349,7 +349,7 @@ class SpecEditorApp:
 
         # Vytvoření Comboboxu pro editaci
         # Použijeme Combobox, i když nejsou presety, protože umožňuje i volné psaní
-        editor = ttk.Combobox(self.tree, values=self.presets) # <--- UPRAVENÝ ŘÁDEK
+        editor = ttk.Combobox(self.editor_window, values=self.presets)
         editor.place(x=x, y=y, width=width, height=height) # Umístění přesně na buňku
         editor.insert(0, current_value) # Vložení aktuální hodnoty
         editor.select_range(0, tk.END) # Označení textu
@@ -362,15 +362,7 @@ class SpecEditorApp:
         # Použití lambda pro předání parametrů (widget, item_id, col_index)
         editor.bind("<Return>", lambda e, w=editor, iid=item_id, idx=col_index: self.save_inline_edit(w, iid, idx))
         editor.bind("<FocusOut>", lambda e, w=editor, iid=item_id, idx=col_index: self.save_inline_edit(w, iid, idx))
-        # Změna pro volání funkce pro zrušení
-        editor.bind("<Escape>", lambda e, w=editor: self.cancel_inline_edit(w))
-        # !!!!! NOVÁ METODA pro zrušení inline editace !!!!!
-    def cancel_inline_edit(self, widget):
-        """Zničí inline editor bez uložení."""
-        print("- Inline editace zrušena (Escape).")
-        widget.destroy()
-        if self.active_editor_widget is widget: # Ověření, zda je to stále aktivní widget
-             self.active_editor_widget = None
+        editor.bind("<Escape>", lambda e, w=editor: w.destroy()) # Escape pouze zničí widget
 
     # !!!!! NOVÁ METODA pro uložení inline editace !!!!!
     def save_inline_edit(self, widget, item_id, col_index):
