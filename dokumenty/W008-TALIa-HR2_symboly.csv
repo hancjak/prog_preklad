@@ -1,0 +1,346 @@
+Souèástka;Znaèení;Pøipojení;Specifikace;Typ;Funkce;Symbol;Stránka è.;È.skupiny;Viditelné;Výpisy zapojení;Výpisy materiálu;Mech. pøíslušenství;VýKON;OTáèKY;Viditelné
+ (0);;;;P12:2/X13:D2;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;TS0:1/P11:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P11:2/FU0:8;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P9:2/PB_ON;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P10:2/PB_OFF;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P9:1/X3:C2;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P10:1/X4:C1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X6:B2/P8:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X6:B1/P7:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X5:B2/P6:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X5:B1/P5:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:B2/P4:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:B1/P3:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X3:B2/P2:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X3:B1/P1:1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P8:2/X8:D1;;sipka;1;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:1/X3:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:2/X3:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:3/X4:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:4/X4:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:5/X5:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:6/X5:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:7/X6:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:8/X6:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:9/X7:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:10/X7:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:11/X8:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:12/X3:C1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:1/X9:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:2/X9:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:3/X10:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:4/X10:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:5/X11:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:6/X11:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:7/X12:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:8/X12:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:9/X13:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:10/X13:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:11/X14:A1;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:12/X14:A2;;sipka;2;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;OUT1:2/X18:1;;sipka;3;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;OUT2:2/X19:1;;sipka;3;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;OUT3:2/X20:1;;sipka;3;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;OUT4:2/X21:1;;sipka;3;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S1-18:2/X15-X23:B1,B2;;sipka;5;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S1-18:3/X15-X23:D1,D2;;sipka;5;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S1-18:4/X15-X23:C1,C2;;sipka;5;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X6:B2/P8:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X6:B1/P7:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X5:B2/P6:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X5:B1/P5:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:B2/P4:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:B1/P3:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X3:B2/P2:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X3:B1/P1:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P8:2/X8:D1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X13:B2/PUC2:IN12;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X13:B1/PUC2:IN11;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X12:B2/PUC2:IN10;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X12:B1/PUC2:IN9;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X11:B2/PUC2:IN8;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X11:B1/PUC2:IN7;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X10:B2/PUC2:IN6;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X10:B1/PUC2:IN5;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X9:B2/PUC2:IN4;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X9:B1/PUC2:IN3;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X14:B1/PUC2:IN13;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P9:1/X3:C2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P10:1/X4:C1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:C2/S1:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL1:A2/X3:D1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:12/X3:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:PWR1/X5:C1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:PWR1/X5:C2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:PWR2/X5:D1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:PWR2/X5:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:VB2/VB2:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:VB1/VB1:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:RS422/TERM:2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:5/PUC2:REL1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:6/PUC2:REL2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:1/PUC2:IN1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:3/PUC2:IN2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X12:B2/PUC2:IN13;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X12:B1/PUC2:IN12;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X11:B2/PUC2:IN11;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X11:B1/PUC2:IN10;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X10:B2/PUC2:IN9;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X10:B1/PUC2:IN8;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X9:B2/PUC2:IN7;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X9:B1/PUC2:IN6;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X8:B2/PUC2:IN5;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X8:B1/PUC2:IN4;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X7:B2/PUC2:IN3;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:PWR1/X5:C1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2:PWR2/X5:D1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P10:2/REL2:11;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P9:2/REL2:9;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:6/PUC2:REL2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:5/PUC2:REL1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:3/PUC2:IN2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:1/PUC2:IN1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:C2/S1:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL1:A2/X3:D1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;REL2:12/X3:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X6:B2/P8:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X6:B1/P7:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X5:B2/P6:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X5:B1/P5:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:B2/P4:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X4:B1/P3:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X3:B2/P2:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X3:B1/P1:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P8:2/X8:D1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P9:2/REL2:9;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P10:2/REL2:11;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P9:1/X3:C2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P10:1/X4:C1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;EM0:1/P11:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P11:2/FU0:8;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PS1:6/P12:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P12:2/X13:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;P12:2/X13:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PS2:3/X24:C2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PS2:4/X24:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:A5/PS1:L;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:B5/PS1:N;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:C5/PS1:PE;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:B6/PS2:FG;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:A6/PS2:L1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X18:A1/PUC3:IN7;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X18:A2/PUC3:IN8;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X19:A1/PUC3:IN9;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X19:A2/PUC3:IN10;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X20:A1/PUC3:IN11;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X20:A2/PUC3:IN12;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X21:A1/PUC3:IN13;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X21:A2/PUC3:IN14;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X22:A1/PUC3:IN15;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X22:A2/PUC3:IN16;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X23:A1/PUC3:IN17;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X23:A2/PUC3:IN18;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PS2:3/X24:C2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PS2:4/X24:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:RS422/TERM:3;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:OUT1/X18:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:OUT2/X19:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:OUT3/X20:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:OUT4/X21:1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X18:A1/PUC3:IN7;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X18:A2/PUC3:IN8;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X19:A1/PUC3:IN9;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X19:A2/PUC3:IN10;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X20:A1/PUC3:IN11;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X20:A2/PUC3:IN12;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X21:A1/PUC3:IN13;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X21:A2/PUC3:IN14;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X22:A1/PUC3:IN15;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X22:A2/PUC3:IN16;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X23:A1/PUC3:IN17;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X23:A2/PUC3:IN18;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:PWR1/X5:C2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3:PWR2/X5:D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:B6/PS2:FG;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;X2:A6/PS2:L1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:1/X3:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:2/X3:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:3/X4:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:4/X4:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:5/X5:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:6/X5:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:7/X6:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:8/X6:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:9/X7:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:10/X7:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:11/X8:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1:12/X3:C1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:1/X9:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:2/X9:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:3/X10:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:4/X10:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:5/X11:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:6/X11:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:7/X12:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:8/X12:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:9/X13:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:10/X13:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:11/X14:A1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2:12/X14:A2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S1 - S18: 1/X15 - X23:C1,C2^S1 - S18: 2/X15 - X23:B1,B2^S1 - S18: 3/X15 - X23:D1,D2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;18x PINDA (S1-S18);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;VB1;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;VB2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC1-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-TR;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-ROBOT;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-PC;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SAFETY LOCK;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT-T1;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT-T2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT-T3;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT-T4;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT-T5;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT-T6;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-T1;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-T2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-T3;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-T4;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-T5;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-T6;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-RT;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-TR;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;15x PINDA;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;36x Cylinder Sensors;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;15x PINDA;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;36x Cylinder Sensors;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;40pin PUC1-INPUTS;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;40pin PUC1-INPUTS;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PWS7(24V);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PWS8(5V);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PWS8(5V);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PWS7(24V);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PWS1-6(24V);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PWS1-6(24V);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;VB1;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;VB2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SAFETY LOCK;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC2-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC3-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PUC1-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;SC-1;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-TR;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-PC;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;ETH-ROBOT;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PC-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;PC-RS422;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;18x PINDA (S1-S18);;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;LIGHT;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S1:1/S4:3;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S4:4/S3:2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S4:4/S3:2;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;S1:1/S4:3;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;solenoid B;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;solenoid A;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;solenoid A;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;solenoid B;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;TR-C;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;TR-C;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (0);;;;LIGHT;;sipka;7;0;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,1 mm2, yellow;PS1:6/P12:1;;sipka;1;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS1:1/X14:C2;;sipka;4;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS1:3/X14:D2;;sipka;4;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS2:3/X24:C2;;sipka;4;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS2:4/X24:D2;;sipka;4;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS1:2/X14:C2;;sipka;4;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS1:4/X14:D2;;sipka;4;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,1 mm2, yellow;PS1:6/P12:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS1:1/X14:C2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS1:2/X13:C2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS1:3/X14:D2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS1:4/X14:D1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,1 mm2, oragne;PS1:5/X14:C1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS1:1/X14:C2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, red;PS1:2/X13:C2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS1:3/X14:D2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,2.5 mm2, white;PS1:4/X14:D1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;CYA,1 mm2, oragne;PS1:5/X14:C1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,brown;FU0:4/FI1:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,gray;FU0:6/FI2:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,blue;FU0:8/FI0:3;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,black;FU0:2/FI0:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1mm2,blue;P11:2/FU0:8;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1mm2,black;EM0:1/P11:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FU2:1/X2:A6;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FU1:1/X2:A5;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FU3:1/X2:A7;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FI1:2/X2:A4;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,gray;FU0:6/X2:A3;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,blue;FI1:4/X2:B2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,blue;FI2:4/X2:B3;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,blue;FI0:8/X2:B1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,brown;FU0:4/X2:A2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,black;FU0:2/X2:A1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;X2:A7/PS1:L;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,blue;X2:B5/PS1:N;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,G-Y;X2:C5/PS1:PE;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,brown;FU0:4/FI1:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,gray;FU0:6/FI2:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,blue;FU0:8/FI0:3;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,black;FU0:2/FI0:1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FU2:1/X2:A6;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FU1:1/X2:A5;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FU3:1/X2:A7;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,black;FI1:2/X2:A4;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,gray;FU0:6/X2:A3;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;1,5mm2,blue;FI1:4/X2:B2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,blue;FI2:4/X2:B3;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,blue;FI0:8/X2:B1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,brown;FU0:4/X2:A2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;2,5mm2,black;FU0:2/X2:A1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;3x1,5mm2;ZR-1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;3x1,5mm2;LIGHT;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;3x1,5mm2;ROBOT;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;5x2,5mm2;TR-C;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;5x2,5mm2;TR-C;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;;SC-1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;;SC-2;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;;RS422;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;3x1,5mm2;ZR-1;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;3x1,5mm2;LIGHT;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+ (1);;;3x1,5mm2;ROBOT;;sipka;6;1;Ano;Ano;Ano;;;;Ano
+P1 (1);P1;1,2;24VAC/DC 20mA;ELECO HIS-95 R;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P2 (1);P2;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P3 (1);P3;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P4 (1);P4;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P5 (1);P5;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P6 (1);P6;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P7 (1);P7;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P8 (1);P8;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P9 (1);P9;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P10 (1);P10;1,2;24VAC/DC 20mA;ELECO HIS-95 G;;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P11 (1);P11;1,2;230VAC/DC,20mA,RED;ELECO HIS-95 R;HR-230V-ON;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+P12 (1);P12;1,2;24VDC/DC,20mA,RED;ELECO HIS-95 G;HR-24V-ON;08-10-01_AB;1;1;Ano;Ano;Ano;;;;Ano
+PUC3-IN (0);PUC3-IN;;;X15:A1/PUC3:IN1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+PUC3-IN (0);PUC3-IN;;;X15:A2/PUC3:IN2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+PUC3-IN (0);PUC3-IN;;;X15:A1/PUC3:IN1;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+PUC3-IN (0);PUC3-IN;;;X15:A2/PUC3:IN2;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X11 (0);X11;;;X16:A2/PUC3:IN4;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X11 (0);X11;;;X16:A2/PUC3:IN4;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X12 (0);X12;;;X17:A1/PUC3:IN5;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X12 (0);X12;;;X17:A1/PUC3:IN5;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X13 (0);X13;;;X17:A2/PUC3:IN6;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X13 (0);X13;;;X17:A2/PUC3:IN6;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X16 (0);X16;;;X16:A1/PUC3:IN3;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+X16 (0);X16;;;X16:A1/PUC3:IN3;;sipka;6;0;Ano;Ano;Ano;;;;Ano
+Z1 (1);Z1;1,2,3;ABB;M1174;;Zásuvka_3B;3;1;Ano;Ano;Ano;;;;Ano
+Z2 (1);Z2;1,2,3;ABB;M1174;;Zásuvka_3B;3;1;Ano;Ano;Ano;;;;Ano
+Z3 (1);Z3;1,2,3;ABB;M1174;;Zásuvka_3B;3;1;Ano;Ano;Ano;;;;Ano
+Z4 (1);Z4;1,2,3;ABB;M1174;;Zásuvka_3B;3;1;Ano;Ano;Ano;;;;Ano

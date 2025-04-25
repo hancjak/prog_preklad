@@ -29,11 +29,19 @@ class SpecEditorApp:
         self.suggested_specs = {}
         self.presets = [] # !!!!! PŘIDÁNO: Seznam pro presety !!!!!
         self.active_editor_widget = None # !!!!! PŘIDÁNO: Reference na aktivní inline editor !!!!!
+        self.selected_col_index = 1 # 1 pro "Spojení", 2 pro "Specifikace"
 
+        # ===== NOVÉ: Uložení původních textů záhlaví =====
+        self.header_text_spojeni = "Spojení"
+        self.header_text_spec = "Specifikace"
+        # ===== KONEC =====
+       
         self.editor_window = tk.Toplevel(parent)
         self.editor_window.title(f"Editor Specifikací - {os.path.basename(input_file)}")
         self.editor_window.geometry("900x600") # Možná bude potřeba větší šířka
         self.editor_window.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.editor_window.bind("<Tab>", self.handle_tab_focus)
+        self.editor_window.bind("<Shift-KeyPress-Tab>", self.handle_shift_tab_focus)
         self.show_all_var = tk.BooleanVar(value=False)
 
         if not self.load_presets(): # !!!!! PŘIDÁNO: Načtení presetů !!!!!
@@ -47,11 +55,44 @@ class SpecEditorApp:
 
         self.create_widgets()
         self.populate_treeview()
+        # ===== NOVÉ: První zvýraznění záhlaví =====
+        self.update_header_highlight()
+        # ===== KONEC =====
 
         self.editor_window.transient(parent)
         self.editor_window.grab_set()
         self.parent.wait_window(self.editor_window)
 
+    def handle_tab_focus(self, event):
+        """Přesune focus na další widget v definovaném pořadí."""
+        widget = self.editor_window.focus_get()
+        if widget == self.group_combo:
+            self.spec_entry.focus_set()
+            return "break" # Zabráníme výchozímu chování
+        elif widget == self.spec_entry:
+            # Po spec_entry by mohl jít focus na tree nebo apply_button
+            # Podle požadavku přepínáme jen mezi combo a entry
+             self.group_combo.focus_set() # Vrátíme se na combo
+             # self.tree.focus_set() # Alternativa: focus na strom
+             return "break"
+        # Pokud je focus jinde (např. tree, tlačítka), necháme defaultní chování
+        # Pokud bychom chtěli plně vlastní pořadí, museli bychom zde přidat další elif
+        return None # Ponecháme výchozí chování pro ostatní widgety
+
+    def handle_shift_tab_focus(self, event):
+        """Přesune focus na předchozí widget v definovaném pořadí."""
+        widget = self.editor_window.focus_get()
+        if widget == self.spec_entry:
+            self.group_combo.focus_set()
+            return "break"
+        elif widget == self.group_combo:
+            # Před group_combo by mohlo být tlačítko Zavřít nebo Uložit,
+            # ale podle požadavku přepínáme jen mezi combo a entry
+            self.spec_entry.focus_set() # Vrátíme se na entry
+            return "break"
+        # Pokud je focus jinde, necháme defaultní chování
+        return None
+    
     def update_main_status(self, text):
         """Aktualizuje status label v hlavním okně (pokud existuje)."""
         if self.status_label_widget:
@@ -194,6 +235,7 @@ class SpecEditorApp:
             import traceback
             traceback.print_exc()
             return False
+       
     def create_widgets(self):
         """Vytvoří prvky GUI v editor okně."""
         top_frame = ttk.Frame(self.editor_window, padding="10")
@@ -203,8 +245,7 @@ class SpecEditorApp:
         self.group_combo.grid(row=0, column=1, padx=(0, 10), sticky=tk.W+tk.E)
         if self.group_keys:
             self.group_combo.current(0)
-            self.group_combo.bind("<<ComboboxSelected>>", self.on_filter_change) # <<< ZMĚNA: Volá on_filter_change
-    # <<< PŘIDÁNO: Checkbox "Zobrazit vše" >>>
+            self.group_combo.bind("<<ComboboxSelected>>", self.on_filter_change) 
         self.show_all_check = ttk.Checkbutton(
             top_frame,
             text="Zobrazit vše",
@@ -227,16 +268,19 @@ class SpecEditorApp:
 
         # Sloupce pro Treeview (identifikátory)
         self.columns = ("line", "spojeni", "spec") # ID sloupců
-
         self.tree = ttk.Treeview(tree_frame, columns=self.columns, show="headings", height=15)
 
         # Nastavení hlaviček a šířek
         self.tree.heading("line", text="#")
         self.tree.column("line", width=50, anchor=tk.CENTER, stretch=tk.NO)
-        self.tree.heading("spojeni", text="Spojení")
-        self.tree.column("spojeni", width=400, anchor=tk.W) # Potřebuje více místa
-        self.tree.heading("spec", text="Specifikace")
-        self.tree.column("spec", width=300, anchor=tk.W) # Potřebuje více místa
+        # ===== APLIKACE STYLU =====
+       # ===== POUŽITÍ ULOŽENÝCH TEXTŮ =====
+        self.tree.heading("spojeni", text=self.header_text_spojeni) # Použijeme uložený text
+        self.tree.column("spojeni", width=400, anchor=tk.W)
+        self.tree.heading("spec", text=self.header_text_spec) # Použijeme uložený text
+        self.tree.column("spec", width=300, anchor=tk.W)
+        # ===== KONEC =====
+
 
         self.tree.tag_configure('oddrow', background='#f0f0f0')
         self.tree.tag_configure('evenrow', background='white')
@@ -250,14 +294,145 @@ class SpecEditorApp:
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.tree.bind("<Double-1>", self.on_tree_double_click)
         # Odebráno: self.tree.bind("<Double-1>", self.edit_selected_item_popup)
+        # ===== NOVÉ BINDINGS =====
+        self.tree.bind("<Up>", self.handle_arrow_up)
+        self.tree.bind("<Down>", self.handle_arrow_down)
+        self.tree.bind("<Left>", self.handle_arrow_left)
+        self.tree.bind("<Right>", self.handle_arrow_right)
+        self.tree.bind("<Return>", self.handle_enter_key)
+        # ===== NOVÉ: Bind pro změnu výběru myší/klávesnicí =====
+        self.tree.bind("<<TreeviewSelect>>", self.on_selection_change)
+        # ===== KONEC =====
 
+        # ===== FOCUS PRO KLÁVESNICI =====
+        self.tree.focus_set() # Nastavíme focus na strom hned po vytvoření
+        # ===== KONEC FOCUS PRO KLÁVESNICI =====
         bottom_frame = ttk.Frame(self.editor_window, padding="10")
         bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
         self.save_button = ttk.Button(bottom_frame, text="Uložit změny do " + os.path.basename(self.output_file), command=self.save_changes)
         self.save_button.pack(side=tk.RIGHT)
         self.cancel_button = ttk.Button(bottom_frame, text="Zavřít editor", command=self.on_close)
         self.cancel_button.pack(side=tk.RIGHT, padx=10)
+        
+    # ===== NOVÉ METODY PRO NAVIGACI =====
+       # ===== NOVÁ METODA pro aktualizaci zvýraznění =====
+    def update_header_highlight(self):
+        """Aktualizuje TEXT záhlaví podle self.selected_col_index."""
+        col_id_spojeni = self.columns[1] # "spojeni"
+        col_id_spec = self.columns[2]    # "spec"
+        selection_marker = " >" # Indikátor vybraného sloupce
 
+        try:
+            # Nastavit obě záhlaví na PŮVODNÍ text (bez markeru)
+            self.tree.heading(col_id_spojeni, text=self.header_text_spojeni)
+            self.tree.heading(col_id_spec, text=self.header_text_spec)
+
+            # Přidat marker k textu aktuálně vybraného sloupce
+            if self.selected_col_index == 1:
+                self.tree.heading(col_id_spojeni, text=self.header_text_spojeni + selection_marker)
+            elif self.selected_col_index == 2:
+                self.tree.heading(col_id_spec, text=self.header_text_spec + selection_marker)
+        except tk.TclError as e:
+            print(f"! Chyba při aktualizaci textu záhlaví: {e}")
+        except AttributeError:
+             print("! Varování: Pokus o aktualizaci textu záhlaví před inicializací Treeview.")
+
+    # ===== NOVÁ METODA pro reakci na změnu výběru =====
+    def on_selection_change(self, event):
+        """Voláno, když se změní vybraný řádek."""
+        # Při změně řádku chceme zachovat zvýraznění sloupce
+        # (není třeba nic dělat, pokud chceme, aby zvýraznění zůstalo stejné)
+        # Pokud bychom chtěli např. resetovat sloupec na "Spojení" při změně řádku:
+        # self.selected_col_index = 1
+        # self.update_header_highlight()
+        pass # Prozatím neděláme nic, zvýraznění zůstává    
+    def _select_item(self, item_id):
+        """Pomocná funkce pro výběr a zobrazení položky."""
+        if item_id:
+            # Zrušit aktivní editor, pokud existuje
+            self.cancel_or_save_active_editor()
+            self.tree.selection_set(item_id)
+            self.tree.focus(item_id)
+            self.tree.see(item_id) # Zajistí viditelnost
+
+    def handle_arrow_up(self, event):
+        """Zpracuje stisk šipky nahoru."""
+        selected_items = self.tree.selection()
+        if not selected_items: # Pokud není nic vybráno, vybereme poslední
+            children = self.tree.get_children()
+            if children:
+                self._select_item(children[-1])
+            return "break" # Zabráníme dalšímu zpracování události
+
+        current_item = selected_items[0]
+        prev_item = self.tree.prev(current_item)
+        if prev_item:
+            self._select_item(prev_item)
+        return "break"
+
+    def handle_arrow_down(self, event):
+        """Zpracuje stisk šipky dolů."""
+        selected_items = self.tree.selection()
+        if not selected_items: # Pokud není nic vybráno, vybereme první
+            children = self.tree.get_children()
+            if children:
+                self._select_item(children[0])
+            return "break"
+
+        current_item = selected_items[0]
+        next_item = self.tree.next(current_item)
+        if next_item:
+            self._select_item(next_item)
+        return "break"
+
+    def handle_arrow_left(self, event):
+        """Zpracuje stisk šipky doleva - přepne sloupec pro editaci."""
+        self.cancel_or_save_active_editor() # Ukončíme editaci, pokud probíhá
+        # Sloupce jsou indexovány 0, 1, 2. Chceme se pohybovat mezi 1 a 2.
+        if self.selected_col_index > 1:
+            self.selected_col_index -= 1
+            print(f"- Vybrán sloupec pro editaci: {self.columns[self.selected_col_index]}")
+            # ===== NOVÉ: Aktualizace zvýraznění =====
+            self.update_header_highlight()
+            # ===== KONEC =====
+        return "break" # Zabráníme výchozímu chování (např. scrollování)
+
+    def handle_arrow_right(self, event):
+        """Zpracuje stisk šipky doprava - přepne sloupec pro editaci."""
+        self.cancel_or_save_active_editor()
+        # Sloupce jsou indexovány 0, 1, 2. Chceme se pohybovat mezi 1 a 2.
+        if self.selected_col_index < 2:
+            self.selected_col_index += 1
+            print(f"- Vybrán sloupec pro editaci: {self.columns[self.selected_col_index]}")
+            self.update_header_highlight()
+        # TODO: Přidat vizuální indikaci vybraného sloupce
+        return "break"
+
+    def cancel_or_save_active_editor(self, save=False):
+        """Ukončí aktivní inline editor (volitelně uloží)."""
+        if self.active_editor_widget:
+            print(f"- Ukončuji inline editor ({'ukládám' if save else 'ruším'})...")
+            try:
+                if save:
+                    # Potřebujeme item_id a col_index, které byly použity k vytvoření
+                    # Musíme si je uložit, když editor vytváříme
+                    editor_info = getattr(self.active_editor_widget, "_editor_info", None)
+                    if editor_info:
+                         self.save_inline_edit(self.active_editor_widget, editor_info['item_id'], editor_info['col_index'])
+                    else:
+                         print("! Varování: Nelze uložit editor, chybí informace.")
+                         self.active_editor_widget.destroy() # Jen zničíme
+                         self.active_editor_widget = None
+                else:
+                    self.active_editor_widget.destroy()
+                    self.active_editor_widget = None
+            except tk.TclError as e:
+                print(f"! Varování: Chyba při rušení editoru: {e}")
+                self.active_editor_widget = None
+            # Vrátíme focus stromu pro další navigaci
+            self.tree.focus_set()
+
+    # ===== KONEC NOVÝCH METOD PRO NAVIGACI =====
     def populate_treeview(self):
         """Naplní Treeview daty podle filtru."""
         # !!!!! PŘIDÁNO: Zničení aktivního editoru před překreslením !!!!!
@@ -289,7 +464,7 @@ class SpecEditorApp:
 
                 self.tree.insert("", tk.END, iid=item_data['id'], values=values_tuple, tags=(current_tag,))
                 row_counter += 1
-
+        self.update_header_highlight()
         displayed_count = len(self.tree.get_children())
         total_count = len(self.all_data)
         status_text = f"Zobrazeno {displayed_count} z {total_count} položek."
@@ -311,26 +486,43 @@ class SpecEditorApp:
     def on_tree_double_click(self, event):
         """Zpracuje dvojklik v Treeview a spustí inline editaci."""
         # Zničit předchozí editor, pokud existuje
-        if self.active_editor_widget:
-            self.active_editor_widget.destroy()
-            self.active_editor_widget = None
+        self.cancel_or_save_active_editor(save=True) # Pokusíme se uložit předchozí
 
-        region = self.tree.identify_region(event.x, event.y)
-        if region != "cell":
-            return # Kliknuto mimo buňku
+        region = self.tree.identify_region(event.x, event.y) #
+        if region != "cell": return #
 
-        column_id = self.tree.identify_column(event.x) # např. '#1', '#2', atd.
-        item_id = self.tree.identify_row(event.y)      # např. 'item_0'
+        column_id = self.tree.identify_column(event.x) #
+        item_id = self.tree.identify_row(event.y)      #
 
-        if not item_id or not column_id: return # Kliknuto mimo data
+        if not item_id or not column_id: return #
 
         try:
-            # Získáme index sloupce (0='line', 1='spojeni', 2='spec') z ID sloupce ('#1', '#2', ...)
-            # self.columns = ("line", "spojeni", "spec")
-            col_index = int(column_id.replace('#', '')) - 1
-        except ValueError:
-            print(f"! Chyba: Neplatné ID sloupce '{column_id}'")
-            return
+            col_index = int(column_id.replace('#', '')) - 1 #
+        except ValueError: return #
+
+        # Aktualizujeme vybraný sloupec podle kliknutí
+        if col_index in [1, 2]:
+             self.selected_col_index = col_index
+             self.start_inline_edit(item_id, col_index) # Voláme novou funkci
+
+    # ===== NOVÁ METODA pro Enter =====
+    def handle_enter_key(self, event):
+        """Spustí editaci pro vybraný řádek a sloupec."""
+        selected_items = self.tree.selection()
+        if not selected_items:
+            return "break" # Nic není vybráno
+
+        current_item_id = selected_items[0]
+        # Použijeme sloupec uložený v self.selected_col_index
+        print(f"+ Enter stisknut na řádku {current_item_id}, sloupec index {self.selected_col_index} ({self.columns[self.selected_col_index]})")
+        self.start_inline_edit(current_item_id, self.selected_col_index)
+        return "break" # Zabráníme dalšímu zpracování
+
+    # ===== UPRAVENÁ/NOVÁ METODA pro spuštění editace =====
+    def start_inline_edit(self, item_id, col_index):
+        """Vytvoří a zobrazí inline editor pro danou buňku."""
+         # Zničit/uložit předchozí editor, pokud existuje
+        self.cancel_or_save_active_editor(save=True)
 
         # Povolit editaci pouze pro sloupce "Spojeni" (index 1) a "Specifikace" (index 2)
         if col_index not in [1, 2]:
@@ -338,97 +530,103 @@ class SpecEditorApp:
             return
 
         # Získání rozměrů buňky pro umístění editoru
-        bbox = self.tree.bbox(item_id, column=column_id)
-        if not bbox: return # Buňka není viditelná?
+        # Potřebujeme získat ID sloupce (např. '#2') z indexu (1)
+        column_id_str = f"#{col_index + 1}"
+        bbox = self.tree.bbox(item_id, column=column_id_str) #
+        if not bbox:
+             print(f"! Varování: Nelze získat bbox pro {item_id}, sloupec {column_id_str}. Buňka nemusí být viditelná.")
+             # Pokusíme se item zobrazit a zkusit znovu
+             self.tree.see(item_id)
+             self.editor_window.update_idletasks() # Necháme Tkinter překreslit
+             bbox = self.tree.bbox(item_id, column=column_id_str)
+             if not bbox:
+                 print("! Chyba: Stále nelze získat bbox.")
+                 return
 
-        x, y, width, height = bbox
+        x, y, width, height = bbox #
 
         # Získání aktuální hodnoty z Treeview
-        values = self.tree.item(item_id, 'values')
-        current_value = values[col_index] if len(values) > col_index else ""
+        values = self.tree.item(item_id, 'values') #
+        current_value = values[col_index] if len(values) > col_index else "" #
 
         # Vytvoření Comboboxu pro editaci
-        # Použijeme Combobox, i když nejsou presety, protože umožňuje i volné psaní
-        editor = ttk.Combobox(self.tree, values=self.presets) # <--- UPRAVENÝ ŘÁDEK
-        editor.place(x=x, y=y, width=width, height=height) # Umístění přesně na buňku
-        editor.insert(0, current_value) # Vložení aktuální hodnoty
-        editor.select_range(0, tk.END) # Označení textu
-        editor.focus_set() # Zaměření na editor
+        editor = ttk.Combobox(self.tree, values=self.presets) # Rodič je self.tree!
+        editor.place(x=x, y=y, width=width, height=height) #
+        editor.insert(0, current_value) #
+        editor.select_range(0, tk.END) #
+        editor.focus_set() #
 
-        # Uložení reference na aktivní editor
+        # Uložení reference na aktivní editor A INFORMACÍ PRO ULOŽENÍ
         self.active_editor_widget = editor
+        # ===== NOVÉ: Uložíme info pro save =====
+        editor._editor_info = {'item_id': item_id, 'col_index': col_index}
+        # ===== KONEC NOVÉHO =====
+
 
         # Navázání událostí na editor
-        # Použití lambda pro předání parametrů (widget, item_id, col_index)
-        editor.bind("<Return>", lambda e, w=editor, iid=item_id, idx=col_index: self.save_inline_edit(w, iid, idx))
-        editor.bind("<FocusOut>", lambda e, w=editor, iid=item_id, idx=col_index: self.save_inline_edit(w, iid, idx))
-        # Změna pro volání funkce pro zrušení
-        editor.bind("<Escape>", lambda e, w=editor: self.cancel_inline_edit(w))
-        # !!!!! NOVÁ METODA pro zrušení inline editace !!!!!
-    def cancel_inline_edit(self, widget):
-        """Zničí inline editor bez uložení."""
-        print("- Inline editace zrušena (Escape).")
-        widget.destroy()
-        if self.active_editor_widget is widget: # Ověření, zda je to stále aktivní widget
-             self.active_editor_widget = None
+        editor.bind("<Return>", lambda e, w=editor, iid=item_id, idx=col_index: self.save_inline_edit(w, iid, idx)) #
+        editor.bind("<FocusOut>", lambda e, w=editor, iid=item_id, idx=col_index: self.save_inline_edit(w, iid, idx)) #
+        editor.bind("<Escape>", lambda e, w=editor: self.cancel_inline_edit(w)) #
 
-    # !!!!! NOVÁ METODA pro uložení inline editace !!!!!
+    # Metoda cancel_inline_edit zůstává stejná
+
     def save_inline_edit(self, widget, item_id, col_index):
         """Uloží hodnotu z inline editoru (Comboboxu) a aktualizuje data a Treeview."""
-        new_value = widget.get().strip()
-        widget.destroy() # Zničení editoru
-        self.active_editor_widget = None # Reset reference
+        # ===== Ochrana před dvojitým voláním (např. Return + FocusOut) =====
+        if not self.active_editor_widget or self.active_editor_widget != widget:
+             # print("- Editor již byl zpracován nebo není aktivní.")
+             try:
+                 widget.destroy() # Pro jistotu zničíme, pokud ještě existuje
+             except tk.TclError:
+                 pass
+             return
+        # ===== KONEC OCHRANY =====
+
+        new_value = widget.get().strip() #
+        # Widget ničíme až po zpracování
+        # widget.destroy() #
 
         # Najít data pro aktualizaci
-        item_data = next((item for item in self.all_data if item['id'] == item_id), None)
+        item_data = next((item for item in self.all_data if item['id'] == item_id), None) #
         if not item_data:
             print(f"! Chyba: Data pro item '{item_id}' nenalezena při ukládání.")
+            self.active_editor_widget = None # Reset reference
+            try: widget.destroy()
+            except tk.TclError: pass
             return
 
-        column_name = self.columns[col_index] # 'spojeni' nebo 'spec'
+        column_name = self.columns[col_index] #
+        old_value = item_data.get(column_name, "") #
 
-        # Získání staré hodnoty pro porovnání
-        old_value = item_data.get(column_name, "")
+        # Aktualizace dat a Treeview pouze pokud se hodnota změnila
+        if new_value != old_value:
+            print(f"+ Ukládám změnu pro {item_id} (řádek {item_data.get('line_num', '?')}), sloupec '{column_name}': '{old_value}' -> '{new_value}'") #
+            item_data[column_name] = new_value #
 
-        if new_value == old_value:
-            # print(f"- Hodnota pro {item_id}/{column_name} nezměněna.")
-            return # Nic se nezměnilo
+            if column_name == 'spojeni':
+                item_data['parsed'] = parse_connection(new_value) #
+                if not item_data['parsed']: print(f"! Varování: Nové spojení '{new_value}' pro {item_id} nelze naparsovat.") #
+            elif column_name == 'spec':
+                is_default = new_value.lower() == config.DEFAULT_SPECIFICATION.lower() or not new_value #
+                if item_id in self.items_to_edit_ids and not is_default: self.items_to_edit_ids.remove(item_id) #
+                elif item_id not in self.items_to_edit_ids and is_default: self.items_to_edit_ids.add(item_id) #
 
-        print(f"+ Ukládám změnu pro {item_id} (řádek {item_data.get('line_num', '?')}), sloupec '{column_name}': '{old_value}' -> '{new_value}'")
+            try:
+                current_values = list(self.tree.item(item_id, 'values')) #
+                if len(current_values) > col_index:
+                    current_values[col_index] = new_value
+                    self.tree.item(item_id, values=tuple(current_values)) #
+                else: print(f"! Chyba: Nelze aktualizovat Treeview pro {item_id} - nesprávný počet hodnot.") #
+            except tk.TclError as e: print(f"! Varování: Aktualizace Treeview pro {item_id} selhala: {e}") #
 
-        # Aktualizace dat v self.all_data
-        item_data[column_name] = new_value
-
-        # Speciální akce podle sloupce
-        if column_name == 'spojeni':
-            # Znovu naparsovat spojení
-            item_data['parsed'] = parse_connection(new_value)
-            if not item_data['parsed']:
-                print(f"! Varování: Nové spojení '{new_value}' pro {item_id} nelze naparsovat.")
-            # Zde bychom mohli aktualizovat i návrhy nebo skupiny, ale to by bylo složitější
-        elif column_name == 'spec':
-            # Aktualizovat stav 'items_to_edit_ids'
-            is_default = new_value.lower() == config.DEFAULT_SPECIFICATION.lower() or not new_value
-            if item_id in self.items_to_edit_ids and not is_default:
-                self.items_to_edit_ids.remove(item_id)
-                print(f"  - Odebráno z 'items_to_edit_ids'")
-            elif item_id not in self.items_to_edit_ids and is_default:
-                self.items_to_edit_ids.add(item_id)
-                print(f"  - Přidáno do 'items_to_edit_ids'")
-
-        # Aktualizace zobrazení v Treeview
+        # Zničení editoru a reset reference až na konci
+        self.active_editor_widget = None
         try:
-            # Musíme získat VŠECHNY aktuální hodnoty řádku a vytvořit nový tuple
-            current_values = list(self.tree.item(item_id, 'values'))
-            if len(current_values) > col_index:
-                current_values[col_index] = new_value # Nahradit upravenou hodnotu
-                self.tree.item(item_id, values=tuple(current_values))
-            else:
-                 print(f"! Chyba: Nelze aktualizovat Treeview pro {item_id} - nesprávný počet hodnot.")
-
-        except tk.TclError as e:
-            # Může nastat, pokud byl item mezitím smazán (např. změnou filtru)
-            print(f"! Varování: Aktualizace Treeview pro {item_id} selhala: {e}")
+             widget.destroy()
+        except tk.TclError:
+             pass # Mohl být zničen už jinde (např. FocusOut po Enter)
+        # Vrátíme focus stromu
+        self.tree.focus_set()
 
     def apply_to_group(self):
         """Aplikuje specifikaci z Entry na všechny viditelné řádky v Treeview."""
