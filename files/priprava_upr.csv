@@ -1,16 +1,16 @@
 Spojeni;Specifikace
-ACT1:1/X14:2;neni spec
-ACT1:3/X15:2;neni spec
-ACT2:1/X14:3;neni spec
-ACT2:3/X15:3;neni spec
-ACT3:1/X14:4;neni spec
-ACT3:3/X15:4;neni spec
-ACT4:1/X14:5;neni spec
-ACT4:3/X15:5;neni spec
-ACT5:1/X14:6;neni spec
-ACT5:3/X15:6;neni spec
-ACT6:1/X14:7;neni spec
-ACT6:3/X15:7;neni spec
+ACT1:1/X14:2;1,5mm2,black
+ACT1:3/X15:2;1,5mm2,blue
+ACT2:1/X14:3;1,5mm2,black
+ACT2:3/X15:3;1,5mm2,blue
+ACT3:1/X14:4;1,5mm2,black
+ACT3:3/X15:4;1,5mm2,blue
+ACT4:1/X14:5;1,5mm2,black
+ACT4:3/X15:5;1,5mm2,blue
+ACT5:1/X14:6;1,5mm2,black
+ACT5:3/X15:6;1,5mm2,blue
+ACT6:1/X14:7;1,5mm2,black
+ACT6:3/X15:7;1,5mm2,blue
 F1:1/S:2;1,5 mm2,black
 F1:2/X1:L1;neni spec
 F1:3/S:4;1,5 mm2,bown
@@ -25,7 +25,9 @@ F:5/S:5;1 mm2,gray
 F:6/K:2;1 mm2,gray
 F:6/K:L3;1 mm2,gray
 FAN:2/X1:N10;neni spec
+FAN:2/X1:N9;neni spec
 FAN:3/X1:PE10;neni spec
+FAN:3/X1:PE9;neni spec
 K1:A1/K2:A1;1 mm2,black
 K1:A1/K:3;1 mm2,black
 K1:A2/K2:A2;1 mm2,blue
@@ -87,8 +89,11 @@ PUC1:6/S6:4;neni spec
 PUC1:7/S7:4;neni spec
 PUC1:8/S8:4;neni spec
 PUC1:9/S9:4;neni spec
+PUC1:PWR1/TG:1;neni spec
+PUC1:PWR2/TG:3;neni spec
 PUC:PWR1/X31:1;neni spec
 PUC:PWR2/X32:1;neni spec
+PUC:RS482/RS:RS482;neni spec
 PWC_T1:1/X2:3;1 mm2,red
 PWC_T1:2/X8:3;1 mm2,white
 PWC_T1:3/X2:4;1 mm2,red
@@ -195,7 +200,14 @@ SW1:PWR1/X31:2;neni spec
 SW1:PWR2/X32:2;neni spec
 SW2:PWR1/X31:3;neni spec
 SW2:PWR2/X32:3;neni spec
+SW:PWR1/TG:2;neni spec
+SW:PWR2/TG:4;neni spec
 TER1:1/X1:L10;neni spec
+TER1:1/X1:L9;neni spec
+TG:1/X25:19;neni spec
+TG:2/X26:19;neni spec
+TG:3/X27:19;neni spec
+TG:4/X28:19;neni spec
 TH:L/X1:L8;neni spec
 TH:N/X1:N8;neni spec
 X1:N/X:N;neni spec

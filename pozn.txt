@@ -1,0 +1,2 @@
+Přidat funkci checkboxu pro vybrání řádků v editoru. 
+Přidat možnost uložit soubor a načíst upravený soubor. 
